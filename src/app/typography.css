@@ -1,0 +1,28 @@
+/*Mauro Sicard, link, button sidebar*/
+
+.d-1 {
+    font-size: 14px;
+    line-height: 130%;
+}
+
+/*chat history, button*/
+.d-2 {
+    font-size: 12px;
+    line-height: 130%;
+}
+/* chat */
+.d-3 {
+    font-size: 16px;
+    line-height: 130%;
+}
+
+/*welcome*/
+.d-4 {
+    font-size: 22px;
+    line-height: 130%;
+}
+/*title, placeholder*/
+.d-5 {
+    font-size: 14px;
+    line-height: 150%;
+}

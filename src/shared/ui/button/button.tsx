@@ -5,11 +5,12 @@ import clsx from 'clsx';
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'icon';
   size?: 'sm' | 'md' | 'lg';    
-  icon?: string;                
+  Icon?: React.ElementType;
+  iconSize?: number;                
   children?: React.ReactNode;   
 }
 
-export default function Button({variant = 'primary', size = 'md', icon, children, className, ...props}: ButtonProps) {
+export default function Button({variant = 'primary', size = 'md', Icon, iconSize = 15, children, className, ...props}: ButtonProps) {
   return (
     <button 
       className={clsx(
@@ -20,9 +21,9 @@ export default function Button({variant = 'primary', size = 'md', icon, children
       )} 
       {...props}
     >
-      {icon && (
+      {Icon && (
         <span className={styles['button__icon-wrapper']}>
-          <Image src={icon} width={15} height={15} alt="" />
+          <Icon width={iconSize} height={iconSize}/>
         </span>
       )}
       {children}

@@ -1,5 +1,6 @@
 import ChatItem from "@/components/chatHistory/chatItem";
 import styles from "@/components/chatHistory/chatHistory.module.scss";
+import clsx from "clsx";
 
 const CHAT_MOCKS = [
     "Quis ipsum suspendisse",
@@ -27,10 +28,7 @@ const CHAT_MOCKS = [
 export default function ChatHistory() {
     return (
         <div className={styles.chat_history}>
-            {/* Этот заголовок будет зафиксирован */}
-            <h2 className={styles.chat_history__title}>Chat History</h2>
-            
-            {/* Этот блок будет скроллиться */}
+            <h2 className={clsx(styles.chat_history__title, 'd-2')}>Chat History</h2>
             <nav className={styles.chat_history__nav}>
                 <ul className={styles.chat_history__list}>
                     {CHAT_MOCKS.map((text, index) => (
