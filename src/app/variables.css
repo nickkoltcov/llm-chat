@@ -1,0 +1,17 @@
+:root {
+
+    --neutral--100: #FFFFFF;
+    --neutral--200: #F7F8FA;
+    --neutral--500: #BAC0CC;
+    --neutral--600: #666F8D;
+    --neutral--700: #19213D;
+    --button--collor: #1777E7;
+
+
+    --shadow-small: 0 0.0625rem 0.1875rem 0 rgba(25, 33, 61, 0.1);
+    --shadow-regular: 0 0.0625rem 0.1875rem rgba(25, 33, 61, 0.1);
+}
+
+
+
+
