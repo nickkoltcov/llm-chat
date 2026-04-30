@@ -1,10 +1,9 @@
-import Image from 'next/image';
 import styles from './button.module.scss';
 import clsx from 'clsx';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'icon';
-  size?: 'sm' | 'md' | 'lg';    
+  size?: 'sm' | 'md' | 'lg' | 'send';    
   Icon?: React.ElementType;
   iconSize?: number;                
   children?: React.ReactNode;   

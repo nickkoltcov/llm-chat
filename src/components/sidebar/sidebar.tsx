@@ -8,13 +8,30 @@ import clsx from 'clsx'
 import IconSetting from '@/shared/assets/icons/setting-icon.svg'
 import IconOpenSidebar from '@/shared/assets/icons/sidebar-left.svg'
 import Plus from '@/shared/assets/icons/plus.svg'
+import {useBreakpoint} from '@/shared/hook/usebreakpoint';
+import { useEffect, useState } from "react"
+import { useCreateChat } from '@/shared/hook/usecreatechat';
 
-interface SidebarProps {
-    isOpen: boolean;
-    onToggle: () => void;
-}
 
-export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
+export default function Sidebar() {
+
+    const { createChat } = useCreateChat();
+    const { isMobile } = useBreakpoint();
+    const [isOpen, setIsOpen] = useState(true);
+
+     useEffect(() => {
+        setIsOpen(!isMobile);
+    }, [isMobile]);
+
+    useEffect(() => {
+        const handleOpen = () => setIsOpen(true);
+        window.addEventListener('open-sidebar', handleOpen);
+        return () => window.removeEventListener('open-sidebar', handleOpen);
+    }, []);
+
+    const onToggle = () => setIsOpen(prev => !prev);
+    
+
     return (
         <>
             <div 
@@ -49,7 +66,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     <ChatHistory />
                 </div>
                 <footer className={styles.sidebar__footer}>
-                    <Button Icon={Plus} size={isOpen ? "md" : "lg"} className="d-1">
+                    <Button Icon={Plus} size={isOpen ? "md" : "lg"} className="d-1" onClick={() => createChat()}>
                         {isOpen && "Start new chat"} 
                     </Button>
                 </footer>

@@ -1,0 +1,23 @@
+.dateSeparator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    font-weight: 400;
+    color: var(--neutral--600);
+}
+
+
+.dateSeparator::before,
+.dateSeparator::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid #e5e5ea;
+}
+
+.dateSeparator::before {
+  margin-right: 15px;
+}
+
+.dateSeparator::after {
+  margin-left: 15px;
+}

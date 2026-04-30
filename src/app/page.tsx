@@ -1,9 +1,10 @@
 import styles from '@/app/home-page.module.scss'
-import Button from '@/shared/ui/button/button'
 import clsx from 'clsx'
-import PaperPlane from '@/shared/assets/icons/paper-plane.svg'
+import FormMainPage from '@/components/formMainPage/formMainPage'
+
 
 export default function StartPage() {
+
   return (
     <section className={styles.home}>
       <div className={styles.home__card}>
@@ -11,20 +12,7 @@ export default function StartPage() {
         <p className={clsx(styles.home__subtitle, 'd-5')}>
           Lorem ipsum dolor sit amet consectetur adipiscing elit sed
         </p>
-        
-        <form className={styles.home__form}>
-          <input 
-            className={clsx(styles.home__input, 'd-5')} 
-            placeholder="How can I help you?"
-          />
-          <Button 
-            variant="icon" 
-            Icon={PaperPlane} 
-            size="lg" 
-            iconSize={18} 
-            className={styles.home__send_btn}
-          />
-        </form>
+        <FormMainPage/>
       </div>
     </section>
   )

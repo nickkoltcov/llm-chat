@@ -48,9 +48,15 @@
         text-overflow: ellipsis;  
         border-radius: 0.5rem;
         transition: all 0.2s ease;
+        max-width: 226px;
         
         &:hover {
             color: var(--neutral--700);           
+        }
+
+        &_active {
+            color: var(--primary-color);
+            border: 1px solid var(--neutral--600);
         }
     }
 }
