@@ -1,0 +1,45 @@
+.logo {
+    border-radius: 19.5rem;
+    flex-shrink: 0;
+}
+
+.messege {
+    display: flex;
+    gap: 0.9375rem;
+    width: 100%;
+
+    &.isAI {
+        border: 0.0625rem solid #E3E6EA;
+        box-shadow: var(--shadow-regular);
+        border-radius: 1rem;
+        padding: 1.25rem;
+        margin: 0.625rem 0;
+    }
+}
+
+.message__header {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.message__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.message__name {
+    color: var(--neutral--700);
+    font-weight: 500;
+}
+
+.message__time {
+    color: var(--neutral--600);
+    font-weight: 500;
+}
+
+.message__text {
+    color: var(--neutral--600);
+    font-weight: 400;
+}

@@ -16,23 +16,6 @@
         box-shadow: var(--shadow-small) 
     }
 
-    &__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.5rem; 
-        border-bottom: 0.0625rem solid #E3E6EA;
-        flex-shrink: 0;
-
-        @media (max-width: 425px) {
-            border-bottom: none;
-        }
-    }
-
-    &__title {
-        font-weight: 500;
-    }
-
     &__content {
         flex: 1;             
         display: flex;        
@@ -40,12 +23,4 @@
         min-height: 0;
     }
 
-    &__btn {
-        display: flex;
-        align-items: center;
-        padding: 0;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-    }
 }

@@ -15,7 +15,7 @@
   &__overlay {
     display: none;
 
-    @media (max-width: 425px) {
+    @media (max-width: 768px) {
       display: block;
       position: fixed;
       inset: 0;
@@ -36,7 +36,7 @@
     width: 5rem;
     min-width: 5rem;
 
-    @media (max-width: 425px) {
+    @media (max-width: 768px) {
       width: 18.5rem;
       min-width: 18.5rem;
       transform: translateX(-100%);
@@ -135,7 +135,7 @@
     flex-shrink: 0;
   }
 
-  @media (max-width: 425px) {
+  @media (max-width: 768px) {
     position: fixed;
     left: 0;
     top: 0;

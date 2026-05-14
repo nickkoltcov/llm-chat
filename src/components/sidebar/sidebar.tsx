@@ -8,13 +8,30 @@ import clsx from 'clsx'
 import IconSetting from '@/shared/assets/icons/setting-icon.svg'
 import IconOpenSidebar from '@/shared/assets/icons/sidebar-left.svg'
 import Plus from '@/shared/assets/icons/plus.svg'
+import {useBreakpoint} from '@/shared/hook/usebreakpoint';
+import { useEffect, useState } from "react"
+import { useRouter } from 'next/navigation';
+import { routes } from '@/shared/config/routes';
+
+
 
 interface SidebarProps {
-    isOpen: boolean;
-    onToggle: () => void;
+  isOpen: boolean
+  isMobile: boolean
+  onToggle: () => void
+  onClose: () => void
 }
 
-export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
+export default function Sidebar({ isOpen, isMobile, onToggle, onClose }: SidebarProps) {
+
+    const router = useRouter()
+
+    const handleNewChat = () => {
+        if (isMobile) onClose()
+        router.push(routes.home())
+    }
+    
+
     return (
         <>
             <div 
@@ -49,7 +66,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     <ChatHistory />
                 </div>
                 <footer className={styles.sidebar__footer}>
-                    <Button Icon={Plus} size={isOpen ? "md" : "lg"} className="d-1">
+                    <Button Icon={Plus} size={isOpen ? "md" : "lg"} className="d-1" onClick={handleNewChat}>
                         {isOpen && "Start new chat"} 
                     </Button>
                 </footer>

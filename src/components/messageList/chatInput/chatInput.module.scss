@@ -1,0 +1,52 @@
+.chat-input {
+  position: relative;
+  width: 100%;
+  display: flex;
+  background: var(--neutral--100);
+  border-radius: 0.75rem;
+  border: 0.0625rem solid #e0e0e0;
+  max-width: 35.875rem; 
+  min-height: 10.75rem; 
+  flex-direction: column;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 3.75rem; 
+    height: 0.0625rem; 
+    background-color: #e0e0e0;
+  }
+
+  &__field {
+    width: 100%;
+    max-height: 4.25rem;
+    padding: 1.25rem 1.25rem 5rem; 
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    overflow-y: auto;
+    scrollbar-width: none;
+    font-size: 1rem; 
+    font-family: inherit;
+
+    &::placeholder {
+      color: var(--neutral--600);
+    }
+  }
+
+  &__button {
+    position: absolute;
+    right: 0.75rem; 
+    bottom: 0.75rem; 
+
+    &_disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      filter: grayscale(1); // Делает кнопку черно-белой
+    }
+  }
+}
