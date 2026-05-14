@@ -6,6 +6,8 @@ import Button from '@/shared/ui/button/button';
 import clsx from 'clsx';
 import { useState } from 'react';
 import { IMessage } from '@/shared/type/index';
+import { format } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ChatInputProps {
   onAddMessage: (message: IMessage) => void;
@@ -20,10 +22,10 @@ export default function ChatInput({ onAddMessage, isLoading }: ChatInputProps) {
     if (!message.trim() || isLoading) return;
 
     const userMessage: IMessage = {
-      id: Date.now(),
+      id: uuidv4(),
       role: 'user',
       name: "Mauro Sicard",
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: format(new Date(), 'HH:mm'),
       avatar: "/avatar.png",
       text: message
     };
@@ -31,7 +33,6 @@ export default function ChatInput({ onAddMessage, isLoading }: ChatInputProps) {
     onAddMessage(userMessage);
     setMessage('');
 
-    
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {

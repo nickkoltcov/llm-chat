@@ -10,26 +10,26 @@ import IconOpenSidebar from '@/shared/assets/icons/sidebar-left.svg'
 import Plus from '@/shared/assets/icons/plus.svg'
 import {useBreakpoint} from '@/shared/hook/usebreakpoint';
 import { useEffect, useState } from "react"
-import { useCreateChat } from '@/shared/hook/usecreatechat';
+import { useRouter } from 'next/navigation';
+import { routes } from '@/shared/config/routes';
 
 
-export default function Sidebar() {
 
-    const { createChat } = useCreateChat();
-    const { isMobile } = useBreakpoint();
-    const [isOpen, setIsOpen] = useState(true);
+interface SidebarProps {
+  isOpen: boolean
+  isMobile: boolean
+  onToggle: () => void
+  onClose: () => void
+}
 
-     useEffect(() => {
-        setIsOpen(!isMobile);
-    }, [isMobile]);
+export default function Sidebar({ isOpen, isMobile, onToggle, onClose }: SidebarProps) {
 
-    useEffect(() => {
-        const handleOpen = () => setIsOpen(true);
-        window.addEventListener('open-sidebar', handleOpen);
-        return () => window.removeEventListener('open-sidebar', handleOpen);
-    }, []);
+    const router = useRouter()
 
-    const onToggle = () => setIsOpen(prev => !prev);
+    const handleNewChat = () => {
+        if (isMobile) onClose()
+        router.push(routes.home())
+    }
     
 
     return (
@@ -66,7 +66,7 @@ export default function Sidebar() {
                     <ChatHistory />
                 </div>
                 <footer className={styles.sidebar__footer}>
-                    <Button Icon={Plus} size={isOpen ? "md" : "lg"} className="d-1" onClick={() => createChat()}>
+                    <Button Icon={Plus} size={isOpen ? "md" : "lg"} className="d-1" onClick={handleNewChat}>
                         {isOpen && "Start new chat"} 
                     </Button>
                 </footer>

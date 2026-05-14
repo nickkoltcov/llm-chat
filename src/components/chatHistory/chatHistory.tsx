@@ -3,33 +3,24 @@
 import ChatItem from "@/components/chatHistory/chatItem";
 import styles from "@/components/chatHistory/chatHistory.module.scss";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 import { useParams } from 'next/navigation';
+import { routes } from "@/shared/config/routes";
+import { useQuery } from "@tanstack/react-query";
+import { IChat } from '@/shared/type/index';
+import { chatStorageService } from "@/services/chatStorage";
+
+
+export const CHAT_HISTORY_QUERY_KEY = ['chat_history'];
 
 export default function ChatHistory() {
-    const [history, setHistory] = useState<any[]>([]);
-
     const params = useParams();
     const currentChatId = params?.chatsid;
 
-    const loadHistory = () => {
-        const chatData = localStorage.getItem('chat_history');
-        if (chatData) {
-            setHistory(JSON.parse(chatData));
-        }
-    };
-
-    useEffect(() => {
-        loadHistory();
-
-        window.addEventListener('chatUpdated', loadHistory);
-        window.addEventListener('storage', loadHistory);
-
-        return () => {
-            window.removeEventListener('chatUpdated', loadHistory);
-            window.removeEventListener('storage', loadHistory);
-        };
-    }, []);
+    const { data: history = [] } = useQuery<IChat[]>({
+        queryKey: CHAT_HISTORY_QUERY_KEY,
+        queryFn: () => chatStorageService.getAll(),
+        refetchOnWindowFocus: false,
+    });
 
     return (
         <div className={styles.chat_history}>
@@ -41,10 +32,13 @@ export default function ChatHistory() {
                             <ChatItem 
                                 key={chat.id} 
                                 title={chat.title} 
-                                href={`/chats/${chat.id}`}
+                                href={routes.chat({ chatId: chat.id })}
                                 isActive={currentChatId === chat.id}
                             />
-                        ))) : (<p className={styles.empty}>No chats</p>)}
+                        ))
+                    ) : (
+                        <p className={styles.empty}>No chats</p>
+                    )}
                 </ul>
             </nav>
         </div>

@@ -6,3 +6,9 @@ export interface IMessage {
   avatar: string;
   text: string;
 }
+
+export interface IChat {
+  id: string;
+  title: string;
+  messages: IMessage[];
+}

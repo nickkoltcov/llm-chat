@@ -1,115 +1,63 @@
 "use client"
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import ChatInput from '@/components/messageList/chatInput/chatInput'
 import MessageList from '@/components/messageList/messageList'
 import styles from '@/components/chatConteiner/chatContainer.module.scss'
 import askAI from '@/services/aiServise'
+import { chatStorageService } from '@/services/chatStorage'
 import { IMessage } from '@/shared/type/index'
+import { v4 as uuidv4 } from 'uuid'
+import { format } from 'date-fns'
 
-export default function ChatContainer({ chatsid }: {chatsid:string}) {
-  
+export default function ChatContainer({ chatsid }: { chatsid: string }) {
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false)
-
-  const hasRequestedRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const rawHistory = localStorage.getItem('chat_history');
-    const history = JSON.parse(rawHistory || '[]');
-    const currentChat = history.find((chat:any) => chat.id === chatsid);
-
+    const currentChat = chatStorageService.getById(chatsid);
     if (currentChat) {
-      const chatMessages = currentChat.messages || [];
-      setMessages(chatMessages);
-
-      const hasAIResponse = chatMessages.some((m:IMessage) => m.role === 'assistant');
-
-      if (chatMessages.length === 1 && chatMessages[0].role === 'user' && !hasAIResponse) {
-        if (!hasRequestedRef.current) {
-          generateAIResponse(chatMessages);
-        }
-      }
+      setMessages(currentChat.messages || []);
     }
-
-    return () => { hasRequestedRef.current = false; };
-
   }, [chatsid]);
 
-  const generateAIResponse = async (historyChat: IMessage[]) => {
+  const onSendUserMessage = async (userMessage: IMessage) => {
+    if (isLoading) return;
 
-    if(hasRequestedRef.current) return
-
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    chatStorageService.updateChatMessages(chatsid, newMessages);
+    setIsLoading(true);
+    
     try {
-      
-      hasRequestedRef.current = true
-      setIsLoading(true)
-      
-      
-      const apiMessage = historyChat.map(messege => ({
-        role: messege.role,
-        content: messege.text
-      }))
-
-      const gptReply = await askAI(apiMessage);
+      const apiHistory = newMessages.map(message => ({ role: message.role, content: message.text }));
+      const gptReply = await askAI(apiHistory);
       
       const aiMessage: IMessage = {
-        id: Date.now() + 1,
+        id: uuidv4(),
         role: 'assistant',
         name: "LanguageGUI",
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        time: format(new Date(), 'HH:mm'),
         avatar: "/AI.png",
         text: gptReply
       };
 
-      addMessage(aiMessage);
-
+      const finalMessages = [...newMessages, aiMessage];
+      setMessages(finalMessages);
+      chatStorageService.updateChatMessages(chatsid, finalMessages);
+      window.dispatchEvent(new Event('chatUpdated'));
     } catch (error) {
-
-      console.error("Ошибка при получении ответа ИИ:", error);
-
+      console.error("Ошибка при отправке сообщения:", error);
     } finally {
-
-      setIsLoading(false)
-      hasRequestedRef.current = false
+      setIsLoading(false);
     }
-  };
-
-
-  const addMessage = (newMessage: IMessage) => {
-    setMessages((prev) => {
-      const updatedMessages = [...prev, newMessage];
-      
-      const history = JSON.parse(localStorage.getItem('chat_history') || '[]');
-      const updatedHistory = history.map((chat: any) => 
-        chat.id === chatsid ? { ...chat, messages: updatedMessages } : chat
-      );
-      
-      localStorage.setItem('chat_history', JSON.stringify(updatedHistory));
-      return updatedMessages
-      
-    })
-    
-  };
-
-  const onSendUserMessage = (userMessage: IMessage) => {
-    if (isLoading || hasRequestedRef.current) return;
-
-    addMessage(userMessage);
-
-    const nextHistory = [...messages, userMessage];
-    generateAIResponse(nextHistory);
   };
 
   return (
     <>
       <div className={styles.chat__messages}>
-        <MessageList 
-          messages={messages}
-          startTime={messages[0]?.time} 
-        />
+        <MessageList messages={messages} startTime={messages[0]?.time} />
       </div>
-
       <div className={styles.chat__input}>
         <ChatInput onAddMessage={onSendUserMessage} isLoading={isLoading} />
       </div>

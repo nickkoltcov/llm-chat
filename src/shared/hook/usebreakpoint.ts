@@ -1,20 +1,22 @@
 import { useState, useEffect } from 'react';
 
 export function useBreakpoint() {
-  const [windowSize, setWindowSize] = useState({isMobile:false})
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const updateBreakpoint = () => {
-      setWindowSize({
-        isMobile: window.innerWidth <= 768
-      })
-    }
-
-    updateBreakpoint();
-    window.addEventListener('resize', updateBreakpoint);
-    return () => window.removeEventListener('resize', updateBreakpoint);
     
-  }, [])
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
 
-  return windowSize
+    const handleMediaQueryChange = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches);
+    };
+
+    handleMediaQueryChange(mediaQuery);
+
+    mediaQuery.addEventListener('change', handleMediaQueryChange);
+
+    return () => mediaQuery.removeEventListener('change', handleMediaQueryChange);
+  }, []);
+
+  return { isMobile };
 }

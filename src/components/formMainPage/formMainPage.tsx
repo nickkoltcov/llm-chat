@@ -10,14 +10,14 @@ import { useCreateChat } from '@/shared/hook/usecreatechat'
 export default function FormMainPage() {
 
     const [text, setText] = useState('');
-    const { createChat } = useCreateChat();
+    const { startChat } = useCreateChat();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!text.trim()) return;
+        e.preventDefault();
+        if (!text.trim()) return;
 
-    createChat(text);
-  };
+        startChat(text);
+    };
 
 
     return(
