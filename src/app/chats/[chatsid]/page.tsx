@@ -1,5 +1,5 @@
 import styles from '@/app/chats/[chatsid]/chat-page.module.scss'
-import ChatContainer from '@/components/chatConteiner/chatContainer'
+import ChatContainer from '@/components/chatContainer/chatContainer'
 
 
 interface ChatPageProps {

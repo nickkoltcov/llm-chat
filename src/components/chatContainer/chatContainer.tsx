@@ -3,20 +3,25 @@
 import { useEffect, useState } from 'react'
 import ChatInput from '@/components/messageList/chatInput/chatInput'
 import MessageList from '@/components/messageList/messageList'
-import styles from '@/components/chatConteiner/chatContainer.module.scss'
-import askAI from '@/services/aiServise'
+import styles from '@/components/chatContainer/chatContainer.module.scss'
+import askAI from '@/services/aiService'
 import { chatStorageService } from '@/services/chatStorage'
 import { IMessage } from '@/shared/type/index'
 import { v4 as uuidv4 } from 'uuid'
 import { format } from 'date-fns'
+import { useRouter } from 'next/navigation';
+import { routes } from "@/shared/config/routes";
 
 export default function ChatContainer({ chatsid }: { chatsid: string }) {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const currentChat = chatStorageService.getById(chatsid);
-    if (currentChat) {
+    if (!currentChat) {
+      router.replace(routes.home())
+    } else {
       setMessages(currentChat.messages || []);
     }
   }, [chatsid]);
@@ -26,7 +31,11 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
 
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
-    chatStorageService.updateChatMessages(chatsid, newMessages);
+    chatStorageService.updateChat(chatsid, (chat) => ({
+      ...chat,
+      messages: newMessages,
+      updatedAt: new Date().toISOString(),
+    }));
     setIsLoading(true);
     
     try {
@@ -44,8 +53,11 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
 
       const finalMessages = [...newMessages, aiMessage];
       setMessages(finalMessages);
-      chatStorageService.updateChatMessages(chatsid, finalMessages);
-      window.dispatchEvent(new Event('chatUpdated'));
+      chatStorageService.updateChat(chatsid, (chat) => ({
+        ...chat,
+        messages: newMessages,
+        updatedAt: new Date().toISOString(),
+      }));
     } catch (error) {
       console.error("Ошибка при отправке сообщения:", error);
     } finally {

@@ -1,4 +1,4 @@
-import { IMessage, IChat } from '@/shared/type/index';
+import { IChat } from '@/shared/type/index';
 
 
 const STORAGE_KEY = 'chat_history';
@@ -44,11 +44,13 @@ export const chatStorageService = {
     this.saveAll([newChat, ...history]);
   },
 
-  updateChatMessages(chatId: string, updatedMessages: IMessage[]): void {
+  updateChat(chatId: string, updater: (chat: IChat) => IChat): void {
     const history = this.getAll();
-    const updatedHistory = history.map(chat =>
-      chat.id === chatId ? { ...chat, messages: updatedMessages } : chat
+
+    const updatedHistory = history.map((chat) =>
+      chat.id === chatId ? updater(chat) : chat
     );
+
     this.saveAll(updatedHistory);
   }
 };

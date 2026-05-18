@@ -8,16 +8,17 @@ import { routes } from "@/shared/config/routes";
 import { useQuery } from "@tanstack/react-query";
 import { IChat } from '@/shared/type/index';
 import { chatStorageService } from "@/services/chatStorage";
+import { CHAT_HISTORY_QUERY_KEY } from "@/shared/config/queryKeys"
 
 
-export const CHAT_HISTORY_QUERY_KEY = ['chat_history'];
+
 
 export default function ChatHistory() {
     const params = useParams();
     const currentChatId = params?.chatsid;
 
     const { data: history = [] } = useQuery<IChat[]>({
-        queryKey: CHAT_HISTORY_QUERY_KEY,
+        queryKey: [CHAT_HISTORY_QUERY_KEY],
         queryFn: () => chatStorageService.getAll(),
         refetchOnWindowFocus: false,
     });

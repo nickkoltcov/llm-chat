@@ -10,11 +10,11 @@ import { useCreateChat } from '@/shared/hook/usecreatechat'
 export default function FormMainPage() {
 
     const [text, setText] = useState('');
-    const { startChat } = useCreateChat();
+    const { startChat , isPending } = useCreateChat();
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!text.trim()) return;
+        if (!text.trim() || isPending) return;
 
         startChat(text);
     };
@@ -27,6 +27,7 @@ export default function FormMainPage() {
                 placeholder="How can I help you?"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                disabled={isPending}
             />
             <Button
                 type='submit' 
@@ -34,7 +35,8 @@ export default function FormMainPage() {
                 Icon={PaperPlane} 
                 size="lg" 
                 iconSize={18} 
-                className={styles.form__send_btn}
+                className={clsx(styles.form__send_btn, isPending && styles.form__send_btn_disabled)}
+                disabled={isPending}
             />
         </form>
     )

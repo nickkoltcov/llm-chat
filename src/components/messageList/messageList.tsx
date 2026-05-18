@@ -29,14 +29,14 @@ export default function MessageList({ messages,startTime }:MessageListProps) {
     <div className={styles.messages}>
 
       {startTime && <MessageDate time={startTime} />}
-      {messages.map((massage) => (
+      {messages.map((message) => (
         <Message 
-          key={massage.id}
-          name={massage.name}
-          time={massage.time}
-          text={massage.text}
-          avatar={massage.avatar}
-          isAI={massage.role === 'assistant'}
+          key={message.id}
+          name={message.name}
+          time={message.time}
+          text={message.text}
+          avatar={message.avatar}
+          isAI={message.role === 'assistant'}
         />
       ))}
 

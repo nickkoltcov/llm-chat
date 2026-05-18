@@ -46,7 +46,7 @@
     &_disabled {
       opacity: 0.5;
       cursor: not-allowed;
-      filter: grayscale(1); // Делает кнопку черно-белой
+      filter: grayscale(1);
     }
   }
 }

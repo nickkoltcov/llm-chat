@@ -29,6 +29,14 @@
         top: 50%;
         transform: translateY(-50%);
         z-index: 2;
+
+
+
+        &_disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
     }
 
 }

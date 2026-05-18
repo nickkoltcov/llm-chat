@@ -8,8 +8,6 @@ import clsx from 'clsx'
 import IconSetting from '@/shared/assets/icons/setting-icon.svg'
 import IconOpenSidebar from '@/shared/assets/icons/sidebar-left.svg'
 import Plus from '@/shared/assets/icons/plus.svg'
-import {useBreakpoint} from '@/shared/hook/usebreakpoint';
-import { useEffect, useState } from "react"
 import { useRouter } from 'next/navigation';
 import { routes } from '@/shared/config/routes';
 
@@ -54,7 +52,7 @@ export default function Sidebar({ isOpen, isMobile, onToggle, onClose }: Sidebar
                     
                     <div className={styles.sidebar__actions}>
                         <button className={styles.sidebar__action_btn} type="button">
-                            <IconSetting alt="Настройки" width={16} hight={16}></IconSetting>
+                            <IconSetting alt="Настройки" width={16} height={16}></IconSetting>
                         </button>
                         <button className={styles.sidebar__action_btn}
                             type="button" onClick={onToggle}>
