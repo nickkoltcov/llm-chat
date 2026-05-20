@@ -10,10 +10,10 @@ export async function POST(req: Request) {
 
   const completion = await client.chat.completions.create({
     model: "openrouter/free",
-    messages: messages
+    messages: messages,
   });
 
   return Response.json({
-    reply: completion.choices[0].message.content
+    reply: completion.choices[0].message.content,
   });
 }

@@ -1,6 +1,6 @@
 export interface IMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   name: string;
   time: string;
   avatar: string;
@@ -11,4 +11,5 @@ export interface IChat {
   id: string;
   title: string;
   messages: IMessage[];
+  updatedAt?: string;
 }

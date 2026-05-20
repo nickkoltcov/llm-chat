@@ -1,17 +1,11 @@
 :root {
+  --neutral--100: #ffffff;
+  --neutral--200: #f7f8fa;
+  --neutral--500: #bac0cc;
+  --neutral--600: #666f8d;
+  --neutral--700: #19213d;
+  --button--color: #1777e7;
 
-    --neutral--100: #FFFFFF;
-    --neutral--200: #F7F8FA;
-    --neutral--500: #BAC0CC;
-    --neutral--600: #666F8D;
-    --neutral--700: #19213D;
-    --button--color: #1777E7;
-
-
-    --shadow-small: 0 0.0625rem 0.1875rem 0 rgba(25, 33, 61, 0.1);
-    --shadow-regular: 0 0.0625rem 0.1875rem rgba(25, 33, 61, 0.1);
+  --shadow-small: 0 0.0625rem 0.1875rem 0 rgba(25, 33, 61, 0.1);
+  --shadow-regular: 0 0.0625rem 0.1875rem rgba(25, 33, 61, 0.1);
 }
-
-
-
-
