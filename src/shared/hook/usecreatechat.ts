@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
-import { chatStorageService } from "@/services/chatStorage";
+import { chatStorageService } from "@/services/storege/chatStorage";
 import { IChat } from "@/shared/type/index";
 import askAI from "@/services/aiService";
 import { useQueryClient, useMutation } from "@tanstack/react-query";

@@ -1,0 +1,44 @@
+// Анимация вращения спиннера
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.callback {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 20px;
+  background-color: #ffffff;
+  background-image: radial-gradient(
+    circle 65vw at 50% 115%,
+    rgba(11, 123, 255, 0.18) 0%,
+    rgba(42, 188, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  overflow: hidden;
+
+  // Элемент спиннера (БЭМ: блок__элемент)
+  &__spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #e5e7eb;
+    border-top: 5px solid #0b7bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  // Элемент надписи (БЭМ: блок__элемент)
+  &__text {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1f2937;
+    margin: 0;
+  }
+}

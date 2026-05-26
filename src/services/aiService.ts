@@ -2,10 +2,13 @@ export default async function askAI(
   messages: { role: string; content: string }[],
 ) {
   try {
+    const storedKey = typeof window !== 'undefined' ? localStorage.getItem('appKey') : null;
+
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(storedKey && { "Authorization": `Bearer ${storedKey}` }),
       },
       body: JSON.stringify({ messages }),
     });

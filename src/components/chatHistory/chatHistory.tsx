@@ -7,7 +7,7 @@ import { useParams } from "next/navigation";
 import { routes } from "@/shared/config/routes";
 import { useQuery } from "@tanstack/react-query";
 import { IChat } from "@/shared/type/index";
-import { chatStorageService } from "@/services/chatStorage";
+import { chatStorageService } from "@/services/storege/chatStorage";
 import { CHAT_HISTORY_QUERY_KEY } from "@/shared/config/queryKeys";
 
 export default function ChatHistory() {

@@ -5,7 +5,7 @@ import ChatInput from "@/components/messageList/chatInput/chatInput";
 import MessageList from "@/components/messageList/messageList";
 import styles from "@/components/chatContainer/chatContainer.module.scss";
 import askAI from "@/services/aiService";
-import { chatStorageService } from "@/services/chatStorage";
+import { chatStorageService } from "@/services/storege/chatStorage";
 import { IMessage } from "@/shared/type/index";
 import { v4 as uuidv4 } from "uuid";
 import { format } from "date-fns";
