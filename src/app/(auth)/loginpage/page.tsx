@@ -1,9 +1,9 @@
-import LoginPage from '@/components/loginPage/loginpage'
+import LoginPage from "@/components/loginPage/loginpage";
 
 export default function LoginPageWrapper() {
   return (
     <>
-      <LoginPage /> 
+      <LoginPage />
     </>
-  )
+  );
 }

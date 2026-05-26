@@ -6,8 +6,8 @@ export async function POST(req: Request) {
 
   if (!userApiKey) {
     return Response.json(
-      { error: "Unauthorized. Please provide an OpenRouter API key." }, 
-      { status: 401 }
+      { error: "Unauthorized. Please provide an OpenRouter API key." },
+      { status: 401 },
     );
   }
 
@@ -29,8 +29,8 @@ export async function POST(req: Request) {
     });
   } catch (error: any) {
     return Response.json(
-      { error: error.message || "Something went wrong" }, 
-      { status: error.status || 500 }
+      { error: error.message || "Something went wrong" },
+      { status: error.status || 500 },
     );
   }
 }
