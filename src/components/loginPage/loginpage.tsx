@@ -5,7 +5,7 @@ import styles from "./loginpage.module.scss";
 import {
   createSHA256CodeChallenge,
   generateCodeVerifier,
-} from "@/services/auth/auth-helpers";
+} from "@/services/helpers/auth-helpers";
 import { authStorageService } from "@/services/storege/authStorage";
 
 export default function LoginPage() {

@@ -1,5 +1,5 @@
 export default async function askAI(
-  messages: { role: string; content: string }[],
+  messages: { role: string; content: any }[],
 ) {
   try {
     const storedKey =
@@ -16,9 +16,17 @@ export default async function askAI(
 
     const data = await res.json();
 
+    if (!res.ok) {
+      throw new Error(data.error || `Server error: ${res.status}`);
+    }
+
     return data.reply;
-  } catch (error) {
-    console.error("Ошибка:", error);
-    return "Произошла ошибка при получении ответа от ИИ. Попробуйте позже.";
+  } catch (error: any) {
+    console.error("Ошибка в askAI:", error);
+
+    throw new Error(
+      error.message ||
+        "Произошла ошибка при получении ответа от ИИ. Попробуйте позже.",
+    );
   }
 }

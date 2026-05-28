@@ -5,7 +5,7 @@ import { useBreakpoint } from "@/shared/hook/usebreakpoint";
 import Sidebar from "@/components/sidebar/sidebar";
 import HeaderChat from "@/components/headers/headers";
 import styles from "@/components/chatShell/chatShell.module.scss";
-import {authStorageService} from '@/services/storege/authStorage'
+import { authStorageService } from "@/services/storege/authStorage";
 
 export default function ChatShell({ children }: { children: React.ReactNode }) {
   const { isMobile } = useBreakpoint();
@@ -16,19 +16,19 @@ export default function ChatShell({ children }: { children: React.ReactNode }) {
   }, [isMobile]);
 
   useEffect(() => {
-    const savedKey = authStorageService.getAppKey()
-    if(savedKey) return
-    const initializeKey =  () => {
+    const savedKey = authStorageService.getAppKey();
+    if (savedKey) return;
+    const initializeKey = () => {
       const cookieRow = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('auth_token='))
+        .split("; ")
+        .find((row) => row.startsWith("auth_token="));
 
-      const userTokenFromCookies = cookieRow?.split('=')[1]
-      if(!userTokenFromCookies || userTokenFromCookies === undefined) return 
-      authStorageService.saveAppKey(userTokenFromCookies)
-    }
-    initializeKey()
-  },[])
+      const userTokenFromCookies = cookieRow?.split("=")[1];
+      if (!userTokenFromCookies || userTokenFromCookies === undefined) return;
+      authStorageService.saveAppKey(userTokenFromCookies);
+    };
+    initializeKey();
+  }, []);
 
   const handleToggle = () => setIsSidebarOpen((prev) => !prev);
   const handleOpen = () => setIsSidebarOpen(true);
