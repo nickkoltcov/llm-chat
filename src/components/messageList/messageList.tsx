@@ -9,9 +9,10 @@ import { useRef, useEffect } from "react";
 interface MessageListProps {
   messages: IMessage[];
   startTime?: string;
+  onRetry?: (id: string) => void;
 }
 
-export default function MessageList({ messages, startTime }: MessageListProps) {
+export default function MessageList({ messages, startTime, onRetry }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -36,7 +37,9 @@ export default function MessageList({ messages, startTime }: MessageListProps) {
           time={message.time}
           text={message.text}
           avatar={message.avatar}
-          isAI={message.role === "assistant"}
+          id={message.id}
+          role={message.role}
+          onRetry={onRetry}
         />
       ))}
 

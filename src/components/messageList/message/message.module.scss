@@ -19,6 +19,8 @@
   &__header {
     display: flex;
     gap: 1.5rem;
+    align-items: center;
+    width: 100%;
   }
 
   &__content {
@@ -36,5 +38,32 @@
   &__time {
     color: var(--neutral--600);
     font-weight: 500;
+  }
+
+  &__button_conteiner {
+    display: flex;
+    margin-left: auto;
+  }
+
+  &__button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    
+    transition: background-color 0.2s ease, transform 0.1s ease;
+
+    &:hover {
+      background-color: #f0f2f5;
+    }
+
+    &:active {
+      transform: scale(0.9); 
+    }
   }
 }

@@ -76,10 +76,63 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
     }
   };
 
+  const onRetryMessage = async (assistantMessageId: string) => { 
+    if (isLoading) return;
+    const assistantMessege = messages.findIndex(m => m.id === assistantMessageId)
+    const userMessege = assistantMessege - 1
+    if (userMessege < 0 || messages[userMessege].role !== "user") return
+    const truncatedMessages = messages.slice(0, userMessege + 1)
+
+    setMessages(truncatedMessages)
+    setErrorBanner(null)
+    setIsLoading(true)
+
+    try {
+      const apiHistory = truncatedMessages.map((message) => ({
+        role: message.role,
+        content: message.text,
+      }));
+
+      const gptReply = await askAI(apiHistory)
+
+      if (gptReply && gptReply.error) {
+        setErrorBanner(gptReply.message);
+        return;
+      }
+
+      const aiMessage: IMessage = {
+        id: uuidv4(),
+        role: "assistant",
+        name: "LanguageGUI",
+        time: format(new Date(), "HH:mm"),
+        avatar: "/AI.png",
+        text: gptReply.reply || gptReply,
+      };
+
+      const finalMessages = [...truncatedMessages, aiMessage];
+      setMessages(finalMessages);
+      chatStorageService.updateChat(chatsid, (chat) => ({
+        ...chat,
+        messages: finalMessages,
+        updatedAt: new Date().toISOString(),
+      }));
+
+      setMessages(finalMessages)
+      chatStorageService.updateChat
+    } catch (error: any) {
+      console.error("Ошибка при отправке сообщения:", error);
+      setErrorBanner(
+        error?.message || "Selected model does not support this file type.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <>
       <div className={styles.chat__messages}>
-        <MessageList messages={messages} startTime={messages[0]?.time} />
+        <MessageList messages={messages} startTime={messages[0]?.time} onRetry={onRetryMessage} />
       </div>
 
       {errorBanner && (
