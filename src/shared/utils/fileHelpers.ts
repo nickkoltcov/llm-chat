@@ -1,3 +1,5 @@
+import { formatBytes } from "@/shared/utils/formatBytes";
+
 export async function convertFileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -23,7 +25,7 @@ export async function buildFileBlocks(files: File[]): Promise<any[]> {
 
   for (const item of files) {
     const base64Result = await convertFileToBase64(item);
-    const fileSize = `${(item.size / (1024 * 1024)).toFixed(1)}mb`;
+    const fileSize = formatBytes(item.size);
     const fileName = item.name;
 
     if (item.type.startsWith("image/")) {

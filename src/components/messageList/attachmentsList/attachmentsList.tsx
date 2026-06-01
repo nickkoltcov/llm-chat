@@ -1,8 +1,7 @@
-"use client";
-
 import clsx from "clsx";
 import styles from "./attachmentsList.module.scss";
 import IconCross from "@/shared/assets/icons/cross.svg";
+import { formatBytes } from "@/shared/utils/formatBytes";
 
 interface AttachmentsListProps {
   files: File[];
@@ -44,7 +43,7 @@ export default function AttachmentsList({
                   <span
                     className={clsx(styles["attachments__file-size"], "d-2")}
                   >
-                    {(file.size / 1024 / 1024).toFixed(1)} MB
+                    {formatBytes(file.size)}
                   </span>
                 </div>
               </div>

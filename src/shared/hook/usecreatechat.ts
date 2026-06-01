@@ -1,11 +1,11 @@
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
-import { format } from "date-fns";
-import { chatStorageService } from "@/services/storege/chatStorage";
+import { chatStorageService } from "@/shared/storage/chatStorage";
 import { IChat } from "@/shared/type/index";
-import askAI from "@/services/aiService";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { CHAT_HISTORY_QUERY_KEY } from "@/shared/config/queryKeys";
+import { createUserMessage } from "@/shared/utils/chatMappers";
+import { chatService } from "@/shared/services/chatService";
 
 export const useCreateChat = () => {
   const router = useRouter();
@@ -14,27 +14,10 @@ export const useCreateChat = () => {
   const { mutate: startChat, isPending } = useMutation({
     mutationFn: async (firstMessage: string) => {
       const newChatId = uuidv4();
-      const currentTime = format(new Date(), "HH:mm");
 
-      const userMessage = {
-        id: uuidv4(),
-        role: "user" as const,
-        name: "Mauro Sicard",
-        time: currentTime,
-        avatar: "/avatar.png",
-        text: firstMessage,
-      };
+      const userMessage = createUserMessage(firstMessage, []);
 
-      const gptReply = await askAI([{ role: "user", content: firstMessage }]);
-
-      const aiMessage = {
-        id: uuidv4(),
-        role: "assistant" as const,
-        name: "LanguageGUI",
-        time: format(new Date(), "HH:mm"),
-        avatar: "/AI.png",
-        text: gptReply,
-      };
+      const aiMessage = await chatService.getAssistantReply([userMessage]);
 
       const newChat: IChat = {
         id: newChatId,

@@ -7,7 +7,6 @@ import clsx from "clsx";
 interface AttachmentMenuProps {
   onClose: () => void;
   onFilesSelect: (files: File[]) => void;
-  onToggle: () => void;
 }
 
 const MENU_ITEMS = [
@@ -23,7 +22,6 @@ const MENU_ITEMS = [
 
 export default function AttachmentMenu({
   onClose,
-  onToggle,
   onFilesSelect,
 }: AttachmentMenuProps) {
   const [acceptType, setAcceptType] = useState("");

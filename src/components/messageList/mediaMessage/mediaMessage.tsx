@@ -8,8 +8,8 @@ interface MediaMessageProps {
 
 const FILE_CONFIG: Record<string, { label: string }> = {
   file: { label: "Document (PDF)" },
-  video_url: { label: "Video file" },
-  input_audio: { label: "Audio file" },
+  video_url: { label: "Video" },
+  input_audio: { label: "Audio" },
 };
 
 export default function MediaMessage({ blocks }: MediaMessageProps) {

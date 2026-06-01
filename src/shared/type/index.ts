@@ -4,7 +4,8 @@ export interface IMessage {
   name: string;
   time: string;
   avatar: string;
-  text: string | any[];
+  text: string;
+  files?: File[];
 }
 
 export interface IChat {

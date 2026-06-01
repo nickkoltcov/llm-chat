@@ -4,73 +4,122 @@ import Image from "next/image";
 import styles from "@/components/messageList/message/message.module.scss";
 import clsx from "clsx";
 import MediaMessage from "@/components/messageList/mediaMessage/mediaMessage";
+import IconCope from "@/shared/assets/icons/cope.svg";
+import IconRetry from "@/shared/assets/icons/retry.svg";
+import IconCheckMark from "@/shared/assets/icons/checkmark.svg";
+import { copyText } from "@/shared/utils/messageUtils";
 import { useState } from "react";
-import IconCope from '@/shared/assets/icons/cope.svg'
-import IconRetry from '@/shared/assets/icons/retry.svg'
 
 interface MessageProps {
-  id:string;
+  id: string;
   name: string;
   time?: string;
-  text: string | any[];
+  text: string;
+  files?: File[];
   avatar: string;
   role: "user" | "assistant";
   onRetry?: (id: string) => void;
+  isMessageLoading?: boolean;
 }
 
-export default function Message({ id, name, time, text, avatar, role, onRetry }: MessageProps) {
-
+export default function Message({
+  id,
+  name,
+  time,
+  text,
+  files,
+  avatar,
+  role,
+  onRetry,
+  isMessageLoading,
+}: MessageProps) {
   const [isCopied, setIsCopied] = useState(false);
 
-  const formattedBlocks = typeof text === "string" 
-    ? [{ type: "text", text }] 
-    : text;
+  const formattedBlocks: any[] = [];
 
-  const isAI = role === "assistant"
-
-  
-  const getCleanText = (): string => {
-    const blocks = Array.isArray(text) ? text : [{ type: "text", text }];
-    return blocks.filter((block) => block?.type === "text").map((block) => block.text).join("\n");
-  };
-
-  const handleCopy = async () => {
-    const copyText = getCleanText()
-
-    if(copyText === '') return 
-
-    try {
-      await navigator.clipboard.writeText(copyText);
-    } catch(error) {
-        const textarea = document.createElement("textarea");
-        textarea.value = copyText;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-      }
+  if (text && text.trim() !== "") {
+    formattedBlocks.push({ type: "text", text });
   }
 
+  if (files && files.length > 0) {
+    files.forEach((file) => {
+      if (file.type?.startsWith("image/")) {
+        formattedBlocks.push({
+          type: "image_url",
+          image_url: {
+            url: URL.createObjectURL(file),
+            name: file.name,
+          },
+        });
+      } else {
+        formattedBlocks.push({
+          type: "file",
+          name: file.name,
+        });
+      }
+    });
+  }
+
+  const isAI = role === "assistant";
+
+  const onCopyClick = async () => {
+    await copyText(text);
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1500);
+  };
+
   return (
-    <div className={clsx(styles.messege, isAI && styles.isAI)}>
-      <Image src={avatar} alt={name} width={32} height={32} className={styles.logo} />
-      <div className={styles.messege__content}>
-        <div className={styles.messege__header}>
-          <span className={clsx(styles.messege__name, "d-1")}>{name}</span>
-          <span className={clsx(styles.messege__time, "d-2")}>{time}</span>
+    <div className={clsx(styles.message, isAI && styles.isAI)}>
+      <Image
+        src={avatar}
+        alt={name}
+        width={32}
+        height={32}
+        className={styles.logo}
+      />
+      <div className={styles.message__content}>
+        <div className={styles.message__header}>
+          <span className={clsx(styles.message__name, "d-1")}>{name}</span>
+          <span className={clsx(styles.message__time, "d-2")}>{time}</span>
           {isAI && (
-          <div className={styles.messege__button_conteiner}>
-            <button className={styles.messege__button} onClick={handleCopy}>
-              <IconCope alt="Открыть сайдбар" width={16} height={16}></IconCope>
-            </button>
-            <button className={styles.messege__button} onClick={() => onRetry?.(id)}>
-              <IconRetry alt="Открыть сайдбар" width={16} height={16}></IconRetry>
-            </button>
-          </div>
-        )}
+            <div className={styles.message__button_conteiner}>
+              <button
+                className={styles.message__button}
+                onClick={onCopyClick}
+                disabled={isMessageLoading}
+              >
+                {isCopied ? (
+                  <IconCheckMark
+                    alt="Скопировано"
+                    width={16}
+                    height={16}
+                  ></IconCheckMark>
+                ) : (
+                  <IconCope alt="Копировать" width={16} height={16}></IconCope>
+                )}
+              </button>
+              <button
+                className={styles.message__button}
+                onClick={() => onRetry?.(id)}
+              >
+                <IconRetry
+                  alt="Повторить запрос "
+                  width={16}
+                  height={16}
+                ></IconRetry>
+              </button>
+            </div>
+          )}
         </div>
-        
-        <MediaMessage blocks={formattedBlocks} />
+
+        {isMessageLoading ? (
+          <div className={styles.message__loader} />
+        ) : (
+          <MediaMessage blocks={formattedBlocks} />
+        )}
       </div>
     </div>
   );

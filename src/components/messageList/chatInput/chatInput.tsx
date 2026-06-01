@@ -6,12 +6,10 @@ import Button from "@/shared/ui/button/button";
 import clsx from "clsx";
 import { useState } from "react";
 import { IMessage } from "@/shared/type/index";
-import { format } from "date-fns";
-import { v4 as uuidv4 } from "uuid";
 import IconClip from "@/shared/assets/icons/clip.svg";
 import AttachmentMenu from "@/components/messageList/attachmentMenu/attachmentMenu";
 import AttachmentsList from "@/components/messageList/attachmentsList/attachmentsList";
-import { buildFileBlocks } from "@/services/helpers/fileHelpers";
+import { createUserMessage } from "@/shared/utils/chatMappers";
 
 interface ChatInputProps {
   onAddMessage: (message: IMessage) => void;
@@ -28,35 +26,10 @@ export default function ChatInput({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
-  const handleToggle = () => setIsMenuOpen((prev) => !prev);
-
-  const handleSend = async () => {
+  const handleSend = () => {
     const hasContent = message.trim() || attachedFiles.length > 0;
     if (!hasContent || isLoading) return;
-
-    const contentBlocks: any[] = [];
-
-    if (message.trim() !== "") {
-      contentBlocks.push({
-        type: "text",
-        text: message,
-      });
-    }
-
-    if (attachedFiles.length > 0) {
-      const fileBlocks = await buildFileBlocks(attachedFiles);
-      contentBlocks.push(...fileBlocks);
-    }
-
-    const userMessage: IMessage = {
-      id: uuidv4(),
-      role: "user",
-      name: "Mauro Sicard",
-      time: format(new Date(), "HH:mm"),
-      avatar: "/avatar.png",
-      text: contentBlocks,
-    };
-
+    const userMessage = createUserMessage(message, attachedFiles);
     onAddMessage(userMessage);
     setMessage("");
     setAttachedFiles([]);
@@ -116,7 +89,6 @@ export default function ChatInput({
           <AttachmentMenu
             onClose={() => setIsMenuOpen(false)}
             onFilesSelect={handleFilesSelect}
-            onToggle={handleToggle}
           />
         )}
 

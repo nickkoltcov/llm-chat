@@ -2,12 +2,11 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { authStorageService } from "@/services/storege/authStorage";
-import { exchangeCodeForKey } from "@/services/authService";
+import { authStorageService } from "@/shared/storage/authStorage";
+import { exchangeCodeForKey } from "@/shared/api/authService";
 import Button from "@/shared/ui/button/button";
 import Link from "next/link";
 import { routes } from "@/shared/config/routes";
-
 import styles from "./callbackpage.module.scss";
 
 export default function CallbackPage() {

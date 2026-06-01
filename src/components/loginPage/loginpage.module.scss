@@ -13,9 +13,9 @@
   );
 
   overflow: hidden;
-}
 
-.form {
-  display: flex;
-  align-items: center;
+  &__form {
+    display: flex;
+    align-items: center;
+  }
 }

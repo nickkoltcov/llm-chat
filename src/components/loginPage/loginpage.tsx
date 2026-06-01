@@ -5,8 +5,8 @@ import styles from "./loginpage.module.scss";
 import {
   createSHA256CodeChallenge,
   generateCodeVerifier,
-} from "@/services/helpers/auth-helpers";
-import { authStorageService } from "@/services/storege/authStorage";
+} from "@/shared/utils/auth-helpers";
+import { authStorageService } from "@/shared/storage/authStorage";
 
 export default function LoginPage() {
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -20,7 +20,7 @@ export default function LoginPage() {
 
   return (
     <section className={styles.login}>
-      <form className={styles.form}>
+      <form className={styles.login__form}>
         <Button size="login" onClick={handleLogin}>
           Login
         </Button>

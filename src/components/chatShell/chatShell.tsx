@@ -5,7 +5,7 @@ import { useBreakpoint } from "@/shared/hook/usebreakpoint";
 import Sidebar from "@/components/sidebar/sidebar";
 import HeaderChat from "@/components/headers/headers";
 import styles from "@/components/chatShell/chatShell.module.scss";
-import { authStorageService } from "@/services/storege/authStorage";
+import { authStorageService } from "@/shared/storage/authStorage";
 
 export default function ChatShell({ children }: { children: React.ReactNode }) {
   const { isMobile } = useBreakpoint();
