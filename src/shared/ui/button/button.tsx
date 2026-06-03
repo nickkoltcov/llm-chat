@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "icon";
-  size?: "sm" | "md" | "lg" | "send";
+  size?: "sm" | "md" | "lg" | "send" | "login";
   Icon?: React.ElementType;
   iconSize?: number;
   children?: React.ReactNode;

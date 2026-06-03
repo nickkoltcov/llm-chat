@@ -5,6 +5,7 @@ export interface IMessage {
   time: string;
   avatar: string;
   text: string;
+  files?: IFileMeta[];
 }
 
 export interface IChat {
@@ -12,4 +13,33 @@ export interface IChat {
   title: string;
   messages: IMessage[];
   updatedAt?: string;
+}
+
+
+export interface IFileMeta {
+  name: string;
+  size: number;
+  type: string;
+  base64: string;
+}
+
+export interface MessageContentBlock {
+  type: "text" | "image_url" | "file" | "video_url" | "input_audio";
+  text?: string;
+  name?: string;
+  size?: string;
+  url?: string;
+  image_url?: {
+    url: string;
+    name?: string;
+    size?: string;
+  };
+  file?: {
+    filename: string;
+    file_data: string;
+  };
+  input_audio?: {
+    data: string;
+    format: string;
+  };
 }

@@ -6,31 +6,43 @@ import Button from "@/shared/ui/button/button";
 import clsx from "clsx";
 import { useState } from "react";
 import { IMessage } from "@/shared/type/index";
-import { format } from "date-fns";
-import { v4 as uuidv4 } from "uuid";
+import IconClip from "@/shared/assets/icons/clip.svg";
+import AttachmentMenu from "@/components/messageList/attachmentMenu/attachmentMenu";
+import AttachmentsList from "@/components/messageList/attachmentsList/attachmentsList";
+import { createUserMessage, convertFileToMeta } from "@/shared/utils/chatMappers";
 
 interface ChatInputProps {
   onAddMessage: (message: IMessage) => void;
   isLoading: boolean;
+  clearError: () => void;
 }
 
-export default function ChatInput({ onAddMessage, isLoading }: ChatInputProps) {
+export default function ChatInput({
+  onAddMessage,
+  isLoading,
+  clearError,
+}: ChatInputProps) {
   const [message, setMessage] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
-  const handleSend = () => {
-    if (!message.trim() || isLoading) return;
+  const handleSend = async () => {
+    const hasContent = message.trim() || attachedFiles.length > 0;
+    if (!hasContent || isLoading) return;
 
-    const userMessage: IMessage = {
-      id: uuidv4(),
-      role: "user",
-      name: "Mauro Sicard",
-      time: format(new Date(), "HH:mm"),
-      avatar: "/avatar.png",
-      text: message,
-    };
+    try {
+      const fileMetas = await Promise.all(
+        attachedFiles.map((file) => convertFileToMeta(file))
+      );
 
-    onAddMessage(userMessage);
-    setMessage("");
+      const userMessage = createUserMessage(message, fileMetas);
+      
+      onAddMessage(userMessage);
+      setMessage("");
+      setAttachedFiles([]);
+    } catch (error) {
+      console.error("Ошибка при подготовке файлов:", error);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -40,14 +52,30 @@ export default function ChatInput({ onAddMessage, isLoading }: ChatInputProps) {
     }
   };
 
+  const handleFilesSelect = (files: File[]) => {
+    setAttachedFiles((prev) => [...prev, ...files]);
+  };
+
+  const handleRemoveFile = (indexToRemove: number) => {
+    setAttachedFiles((prev) =>
+      prev.filter((_, index) => index !== indexToRemove),
+    );
+  };
+
+  const isButtonDisabled =
+    (!message.trim() && attachedFiles.length === 0) || isLoading;
+
   return (
     <form
       className={styles["chat-input"]}
       onSubmit={(e) => {
         e.preventDefault();
         handleSend();
+        clearError();
       }}
     >
+      <AttachmentsList files={attachedFiles} onRemoveFile={handleRemoveFile} />
+
       <textarea
         value={message}
         disabled={isLoading}
@@ -56,22 +84,40 @@ export default function ChatInput({ onAddMessage, isLoading }: ChatInputProps) {
         className={styles["chat-input__field"]}
         placeholder="How can I help you?"
       />
-      <Button
-        disabled={!message.trim() || isLoading}
-        type="submit"
-        variant="primary"
-        Icon={PaperPlane}
-        size="send"
-        iconSize={11}
-        className={clsx(
-          styles["chat-input__button"],
-          "d-2",
-          (isLoading || !message.trim()) &&
-            styles["chat-input__button_disabled"],
+
+      <div className={styles["chat-input__controls"]}>
+        <button
+          className={styles["chat-input__clip"]}
+          type="button"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          disabled={isLoading}
+        >
+          <IconClip alt="Добавить файл" width={16} height={16}></IconClip>
+        </button>
+
+        {isMenuOpen && (
+          <AttachmentMenu
+            onClose={() => setIsMenuOpen(false)}
+            onFilesSelect={handleFilesSelect}
+          />
         )}
-      >
-        {isLoading ? "Thinking..." : "Send message"}
-      </Button>
+
+        <Button
+          disabled={isButtonDisabled}
+          type="submit"
+          variant="primary"
+          Icon={PaperPlane}
+          size="send"
+          iconSize={11}
+          className={clsx(
+            styles["chat-input__button"],
+            "d-2",
+            isButtonDisabled && styles["chat-input__button_disabled"],
+          )}
+        >
+          {isLoading ? "Thinking..." : "Send message"}
+        </Button>
+      </div>
     </form>
   );
 }

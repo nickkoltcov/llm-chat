@@ -1,5 +1,4 @@
 import { Inter } from "next/font/google";
-import MainLayout from "@/components/mainLayout/mainLayout";
 import "./globals.css";
 import "./variables.css";
 import "./typography.css";
@@ -15,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <body className={inter.className}>
-        <Providers>
-          <MainLayout>{children}</MainLayout>
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

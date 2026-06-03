@@ -1,4 +1,4 @@
-import styles from "@/app/home-page.module.scss";
+import styles from "./home-page.module.scss";
 import clsx from "clsx";
 import FormMainPage from "@/components/formMainPage/formMainPage";
 

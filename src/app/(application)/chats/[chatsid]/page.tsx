@@ -1,4 +1,4 @@
-import styles from "@/app/chats/[chatsid]/chat-page.module.scss";
+import styles from "@/app/(application)/chats/[chatsid]/chat-page.module.scss";
 import ChatContainer from "@/components/chatContainer/chatContainer";
 
 interface ChatPageProps {

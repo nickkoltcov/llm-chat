@@ -3,7 +3,7 @@
   flex-shrink: 0;
 }
 
-.messege {
+.message {
   display: flex;
   gap: 0.9375rem;
   width: 100%;
@@ -19,6 +19,8 @@
   &__header {
     display: flex;
     gap: 1.5rem;
+    align-items: center;
+    width: 100%;
   }
 
   &__content {
@@ -38,8 +40,49 @@
     font-weight: 500;
   }
 
-  &__text {
-    color: var(--neutral--600);
-    font-weight: 400;
+  &__button_conteiner {
+    display: flex;
+    margin-left: auto;
+  }
+
+  &__button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+
+    transition:
+      background-color 0.2s ease,
+      transform 0.1s ease;
+
+    &:hover {
+      background-color: #f0f2f5;
+    }
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  &__loader {
+    width: 24px;
+    height: 24px;
+    border: 2.5px solid rgba(0, 0, 0, 0.08);
+    border-top-color: #555;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    margin: 8px 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

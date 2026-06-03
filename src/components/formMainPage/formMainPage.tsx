@@ -11,6 +11,8 @@ export default function FormMainPage() {
   const [text, setText] = useState("");
   const { startChat, isPending } = useCreateChat();
 
+  const isDisabled = !text.trim() || isPending;
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!text.trim() || isPending) return;
@@ -35,9 +37,9 @@ export default function FormMainPage() {
         iconSize={18}
         className={clsx(
           styles.form__send_btn,
-          isPending && styles.form__send_btn_disabled,
+          isDisabled && styles.form__send_btn_disabled,
         )}
-        disabled={isPending}
+        disabled={isDisabled}
       />
     </form>
   );

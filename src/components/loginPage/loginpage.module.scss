@@ -1,0 +1,21 @@
+.login {
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #ffffff;
+
+  background-image: radial-gradient(
+    circle 65vw at 50% 115%,
+    rgba(11, 123, 255, 0.18) 0%,
+    rgba(42, 188, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  overflow: hidden;
+
+  &__form {
+    display: flex;
+    align-items: center;
+  }
+}

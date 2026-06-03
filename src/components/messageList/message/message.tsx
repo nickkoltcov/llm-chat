@@ -1,24 +1,81 @@
+"use client";
+
 import Image from "next/image";
 import styles from "@/components/messageList/message/message.module.scss";
 import clsx from "clsx";
+import MediaMessage from "@/components/messageList/mediaMessage/mediaMessage";
+import IconCope from "@/shared/assets/icons/cope.svg";
+import IconRetry from "@/shared/assets/icons/retry.svg";
+import IconCheckMark from "@/shared/assets/icons/checkmark.svg";
+import { copyText } from "@/shared/utils/messageUtils";
+import { useState } from "react";
+import { IFileMeta, MessageContentBlock } from "@/shared/type";
+import { formatBytes } from "@/shared/utils/formatBytes";
 
 interface MessageProps {
+  id: string;
   name: string;
   time?: string;
   text: string;
+  files?: IFileMeta[];
   avatar: string;
-  isAI?: boolean;
+  role: "user" | "assistant";
+  onRetry?: (id: string) => void;
+  isMessageLoading?: boolean;
 }
 
 export default function Message({
+  id,
   name,
   time,
   text,
+  files,
   avatar,
-  isAI,
+  role,
+  onRetry,
+  isMessageLoading,
 }: MessageProps) {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const formattedBlocks: MessageContentBlock[] = [];
+
+  if (text && text.trim() !== "") {
+    formattedBlocks.push({ type: "text", text });
+  }
+
+  if (files && files.length > 0) {
+    files.forEach((file) => {
+      if (file.type?.startsWith("image/")) {
+        formattedBlocks.push({
+          type: "image_url",
+          image_url: {
+            url: file.base64,
+            name: file.name,
+          },
+        });
+      } else {
+        formattedBlocks.push({
+          type: "file",
+          name: file.name,
+          size: formatBytes(file.size)
+        });
+      }
+    });
+  }
+
+  const isAI = role === "assistant";
+
+  const onCopyClick = async () => {
+    await copyText(text);
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1500);
+  };
+
   return (
-    <div className={clsx(styles.messege, isAI && styles.isAI)}>
+    <div className={clsx(styles.message, isAI && styles.isAI)}>
       <Image
         src={avatar}
         alt={name}
@@ -26,12 +83,46 @@ export default function Message({
         height={32}
         className={styles.logo}
       />
-      <div className={styles.messege__content}>
-        <div className={styles.messege__header}>
-          <span className={clsx(styles.messege__name, "d-1")}>{name}</span>
-          <span className={clsx(styles.messege__time, "d-2")}>{time}</span>
+      <div className={styles.message__content}>
+        <div className={styles.message__header}>
+          <span className={clsx(styles.message__name, "d-1")}>{name}</span>
+          <span className={clsx(styles.message__time, "d-2")}>{time}</span>
+          {isAI && (
+            <div className={styles.message__button_conteiner}>
+              <button
+                className={styles.message__button}
+                onClick={onCopyClick}
+                disabled={isMessageLoading}
+              >
+                {isCopied ? (
+                  <IconCheckMark
+                    alt="Скопировано"
+                    width={16}
+                    height={16}
+                  ></IconCheckMark>
+                ) : (
+                  <IconCope alt="Копировать" width={16} height={16}></IconCope>
+                )}
+              </button>
+              <button
+                className={styles.message__button}
+                onClick={() => onRetry?.(id)}
+              >
+                <IconRetry
+                  alt="Повторить запрос "
+                  width={16}
+                  height={16}
+                ></IconRetry>
+              </button>
+            </div>
+          )}
         </div>
-        <div className={clsx(styles.messege__text, "d-5")}>{text}</div>
+
+        {isMessageLoading ? (
+          <div className={styles.message__loader} />
+        ) : (
+          <MediaMessage blocks={formattedBlocks} />
+        )}
       </div>
     </div>
   );
