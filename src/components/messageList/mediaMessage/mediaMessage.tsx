@@ -1,9 +1,10 @@
 import styles from "./mediaMessage.module.scss";
 import clsx from "clsx";
 import IconFile from "@/shared/assets/icons/File.svg";
+import { MessageContentBlock } from '@/shared/type/index'
 
 interface MediaMessageProps {
-  blocks: any[];
+  blocks: MessageContentBlock[];
 }
 
 const FILE_CONFIG: Record<string, { label: string }> = {
@@ -33,7 +34,7 @@ export default function MediaMessage({ blocks }: MediaMessageProps) {
           return (
             <div key={index} className={styles["media-message__image-wrap"]}>
               <img
-                src={block.image_url.url}
+                src={block.image_url?.url}
                 alt="Вложение"
                 className={styles["media-message__image"]}
               />
@@ -42,10 +43,15 @@ export default function MediaMessage({ blocks }: MediaMessageProps) {
         }
 
         if (FILE_CONFIG[block.type]) {
+
+          const fileBlock = block as Extract<
+            MessageContentBlock,
+            { type: "file" | "video_url" | "input_audio" }
+          >;
+          
           const originalFileName =
             block.name ||
-            block.filename ||
-            block.file?.name ||
+            block.file?.filename ||
             FILE_CONFIG[block.type].label;
 
           return (

@@ -1,4 +1,5 @@
 import { formatBytes } from "@/shared/utils/formatBytes";
+import { IFileMeta, MessageContentBlock } from "../type";
 
 export async function convertFileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -20,11 +21,10 @@ export async function convertFileToBase64(file: File): Promise<string> {
   });
 }
 
-export async function buildFileBlocks(files: File[]): Promise<any[]> {
-  const blocks: any[] = [];
+export  function buildFileBlocks(files: IFileMeta[]): MessageContentBlock[] {
+  const blocks: MessageContentBlock[] = [];
 
   for (const item of files) {
-    const base64Result = await convertFileToBase64(item);
     const fileSize = formatBytes(item.size);
     const fileName = item.name;
 
@@ -32,7 +32,7 @@ export async function buildFileBlocks(files: File[]): Promise<any[]> {
       blocks.push({
         type: "image_url",
         image_url: {
-          url: base64Result,
+          url: item.base64,
           name: fileName,
           size: fileSize,
         },
@@ -44,19 +44,19 @@ export async function buildFileBlocks(files: File[]): Promise<any[]> {
         size: fileSize,
         file: {
           filename: fileName,
-          file_data: base64Result,
+          file_data: item.base64,
         },
       });
     } else if (item.type.startsWith("video/")) {
       blocks.push({
         type: "video_url",
-        url: base64Result,
+        url: item.base64,
         name: fileName,
         size: fileSize,
       });
     } else if (item.type.startsWith("audio/")) {
-      const commaIndex = base64Result.indexOf(",");
-      const cleanBase64 = base64Result.slice(commaIndex + 1);
+      const commaIndex = item.base64.indexOf(",");
+      const cleanBase64 = item.base64.slice(commaIndex + 1);
       const audioFormat = item.type.split("/")[1] || "mp3";
 
       blocks.push({

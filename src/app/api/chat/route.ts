@@ -2,7 +2,7 @@ import OpenAI from "openai";
 
 export async function POST(req: Request) {
   const authHeader = req.headers.get("Authorization");
-  const userApiKey = authHeader ? authHeader.replace("Bearer ", "") : null;
+  const userApiKey = process.env.OPENROUTER_PROVISIONING_KEY
 
   if (!userApiKey) {
     return Response.json(

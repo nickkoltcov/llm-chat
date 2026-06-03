@@ -72,9 +72,7 @@ export default function useChatSession(chatsid: string) {
     try {
       const aiMessage = await chatService.getAssistantReply(truncatedMessages);
 
-      const updatedMessages = messages.map((message, index) =>
-        index === assistantMessage ? aiMessage : message,
-      );
+      const updatedMessages = [...truncatedMessages, aiMessage]
 
       setMessages(updatedMessages);
       chatStorageService.updateChat(chatsid, (chat) => ({

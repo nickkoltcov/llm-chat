@@ -10,6 +10,9 @@ import IconOpenSidebar from "@/shared/assets/icons/sidebar-left.svg";
 import Plus from "@/shared/assets/icons/plus.svg";
 import { useRouter } from "next/navigation";
 import { routes } from "@/shared/config/routes";
+import IconExit from '@/shared/assets/icons/Exit.svg'
+import { logout } from "@/shared/api/authService";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -25,11 +28,18 @@ export default function Sidebar({
   onClose,
 }: SidebarProps) {
   const router = useRouter();
+  const queryClient = useQueryClient()
 
   const handleNewChat = () => {
     if (isMobile) onClose();
     router.push(routes.home());
   };
+
+  const handleLogout = async() => {
+    await logout()
+    queryClient.clear()
+    router.push(routes.login())
+  }
 
   return (
     <>
@@ -56,6 +66,9 @@ export default function Sidebar({
             <span className={clsx(styles.sidebar__name, "d-1")}>
               Mauro Sicard
             </span>
+            <button type='button' className={styles.sidebar__action_btn} onClick={handleLogout}>
+              <IconExit alt="Выход" width={16} height={16}></IconExit>
+            </button>
           </div>
 
           <div className={styles.sidebar__actions}>

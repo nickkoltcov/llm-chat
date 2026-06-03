@@ -1,5 +1,5 @@
 export default async function askAI(
-  messages: { role: string; content: any }[],
+  messages: { role: string; content: string }[],
 ) {
   try {
     const storedKey =

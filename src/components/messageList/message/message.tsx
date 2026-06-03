@@ -9,13 +9,15 @@ import IconRetry from "@/shared/assets/icons/retry.svg";
 import IconCheckMark from "@/shared/assets/icons/checkmark.svg";
 import { copyText } from "@/shared/utils/messageUtils";
 import { useState } from "react";
+import { IFileMeta, MessageContentBlock } from "@/shared/type";
+import { formatBytes } from "@/shared/utils/formatBytes";
 
 interface MessageProps {
   id: string;
   name: string;
   time?: string;
   text: string;
-  files?: File[];
+  files?: IFileMeta[];
   avatar: string;
   role: "user" | "assistant";
   onRetry?: (id: string) => void;
@@ -35,7 +37,7 @@ export default function Message({
 }: MessageProps) {
   const [isCopied, setIsCopied] = useState(false);
 
-  const formattedBlocks: any[] = [];
+  const formattedBlocks: MessageContentBlock[] = [];
 
   if (text && text.trim() !== "") {
     formattedBlocks.push({ type: "text", text });
@@ -47,7 +49,7 @@ export default function Message({
         formattedBlocks.push({
           type: "image_url",
           image_url: {
-            url: URL.createObjectURL(file),
+            url: file.base64,
             name: file.name,
           },
         });
@@ -55,6 +57,7 @@ export default function Message({
         formattedBlocks.push({
           type: "file",
           name: file.name,
+          size: formatBytes(file.size)
         });
       }
     });

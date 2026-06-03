@@ -1,4 +1,6 @@
-const filterText = (text: string | any[]): string => {
+import { MessageContentBlock } from "../type";
+
+const filterText = (text: string | MessageContentBlock[]): string => {
   const blocks = Array.isArray(text) ? text : [{ type: "text", text }];
   return blocks
     .filter((block) => block?.type === "text")
@@ -6,7 +8,7 @@ const filterText = (text: string | any[]): string => {
     .join("\n");
 };
 
-export const copyText = async (text: string | any[]) => {
+export const copyText = async (text: string | MessageContentBlock[]) => {
   const copyText = filterText(text);
 
   if (copyText === "") return;

@@ -9,7 +9,7 @@ import { IMessage } from "@/shared/type/index";
 import IconClip from "@/shared/assets/icons/clip.svg";
 import AttachmentMenu from "@/components/messageList/attachmentMenu/attachmentMenu";
 import AttachmentsList from "@/components/messageList/attachmentsList/attachmentsList";
-import { createUserMessage } from "@/shared/utils/chatMappers";
+import { createUserMessage, convertFileToMeta } from "@/shared/utils/chatMappers";
 
 interface ChatInputProps {
   onAddMessage: (message: IMessage) => void;
@@ -26,13 +26,23 @@ export default function ChatInput({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     const hasContent = message.trim() || attachedFiles.length > 0;
     if (!hasContent || isLoading) return;
-    const userMessage = createUserMessage(message, attachedFiles);
-    onAddMessage(userMessage);
-    setMessage("");
-    setAttachedFiles([]);
+
+    try {
+      const fileMetas = await Promise.all(
+        attachedFiles.map((file) => convertFileToMeta(file))
+      );
+
+      const userMessage = createUserMessage(message, fileMetas);
+      
+      onAddMessage(userMessage);
+      setMessage("");
+      setAttachedFiles([]);
+    } catch (error) {
+      console.error("Ошибка при подготовке файлов:", error);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
