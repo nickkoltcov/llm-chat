@@ -1,10 +1,5 @@
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
-import { chatStorageService } from "@/shared/storage/chatStorage";
-import { IChat } from "@/shared/type/index";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { CHAT_HISTORY_QUERY_KEY } from "@/shared/config/queryKeys";
-import { createUserMessage } from "@/shared/utils/chatMappers";
 import { chatService } from "@/shared/services/chatService";
 
 export const useCreateChat = () => {
@@ -12,25 +7,16 @@ export const useCreateChat = () => {
   const queryClient = useQueryClient();
 
   const { mutate: startChat, isPending } = useMutation({
-    mutationFn: async (firstMessage: string) => {
-      const newChatId = uuidv4();
+    mutationFn: async (title: string | null) => {
 
-      const userMessage = createUserMessage(firstMessage, []);
-
-      const aiMessage = await chatService.getAssistantReply([userMessage]);
-
-      const newChat: IChat = {
-        id: newChatId,
-        title: firstMessage.slice(0, 30),
-        messages: [userMessage, aiMessage],
-      };
-
-      return { newChat, newChatId };
+      const createChat = await chatService.createChat(title);
+      
+      return { response: createChat, title };
     },
-    onSuccess: ({ newChat, newChatId }) => {
-      chatStorageService.addChat(newChat);
-      queryClient.invalidateQueries({ queryKey: [CHAT_HISTORY_QUERY_KEY] });
-      router.push(`/chats/${newChatId}`);
+    onSuccess: ({ response, title }) => {
+      queryClient.invalidateQueries({ queryKey: ['chats'] });
+      const messageParam = title ? `?message=${encodeURIComponent(title)}` : '';
+      router.push(`/chats/${response.data.id}${messageParam}`);
     },
     onError: (error) => {
       console.error("Ошибка при инициализации чата:", error);

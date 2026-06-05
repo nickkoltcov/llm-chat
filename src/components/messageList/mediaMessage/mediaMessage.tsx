@@ -44,10 +44,6 @@ export default function MediaMessage({ blocks }: MediaMessageProps) {
 
         if (FILE_CONFIG[block.type]) {
 
-          const fileBlock = block as Extract<
-            MessageContentBlock,
-            { type: "file" | "video_url" | "input_audio" }
-          >;
           
           const originalFileName =
             block.name ||

@@ -5,20 +5,17 @@ import styles from "@/components/chatHistory/chatHistory.module.scss";
 import clsx from "clsx";
 import { useParams } from "next/navigation";
 import { routes } from "@/shared/config/routes";
-import { useQuery } from "@tanstack/react-query";
-import { IChat } from "@/shared/type/index";
-import { chatStorageService } from "@/shared/storage/chatStorage";
-import { CHAT_HISTORY_QUERY_KEY } from "@/shared/config/queryKeys";
+import useChatsList from "@/shared/hook/useChatsList"
+
 
 export default function ChatHistory() {
   const params = useParams();
   const currentChatId = params?.chatsid;
 
-  const { data: history = [] } = useQuery<IChat[]>({
-    queryKey: [CHAT_HISTORY_QUERY_KEY],
-    queryFn: () => chatStorageService.getAll(),
-    refetchOnWindowFocus: false,
-  });
+  const {data, fetchNextPage, hasNextPage, isFetchingNextPage} = useChatsList()
+
+  const history = data?.pages.flatMap((page) => page.data) || []
+
 
   return (
     <div className={styles.chat_history}>
@@ -37,6 +34,15 @@ export default function ChatHistory() {
           </ul>
         ) : (
           <p className={styles.chat_history__empty}>No chats</p>
+        )}
+        {hasNextPage && (
+          <button 
+            onClick={() => fetchNextPage()} 
+            disabled={isFetchingNextPage}
+            className={styles.chat_history__load_more}
+          >
+            {isFetchingNextPage ? "Loading..." : "Load more"}
+          </button>
         )}
       </nav>
     </div>

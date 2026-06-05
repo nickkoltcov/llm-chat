@@ -77,8 +77,8 @@ export default function Message({
   return (
     <div className={clsx(styles.message, isAI && styles.isAI)}>
       <Image
-        src={avatar}
-        alt={name}
+        src={avatar || (role === "user" ? "/avatar.png" : "/AI.png")}
+        alt={'ава'}
         width={32}
         height={32}
         className={styles.logo}

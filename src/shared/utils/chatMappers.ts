@@ -30,6 +30,30 @@ export async function mapMessagesToApiHistory(messages: IMessage[]) {
   });
 }
 
+
+export function mapApiMessageToClient(message: any): IMessage {
+  const isAI = message.role === "assistant";
+
+  return {
+    id: message.id,
+    role: message.role,
+    status: message.status || "ok",
+    text: message.content || "",
+    name: isAI ? "AI Assistant" : "Mauro Sicard",
+    time: message.createdAt 
+      ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) 
+      : "", 
+    
+    avatar: message.avatar || (isAI ? "/AI.png" : "/avatar.png"),
+    files: (message.attachments || []).map((att: any) => ({
+      name: att.type === "image" ? "Image" : "Document",
+      size: 0,
+      type: att.mimeType,
+      base64: `data:${att.mimeType};base64,${att.data}`,
+    })),
+  };
+}
+
 export function mapApiReplyToAssistantMessage(gptReply: any): IMessage {
   return {
     id: uuidv4(),
@@ -63,7 +87,7 @@ export async function convertFileToMeta(file: File): Promise<IFileMeta> {
 
 export function createUserMessage(
   text: string,
-  attachedFiles: IFileMeta[],
+   attachedFiles: IFileMeta[],
 ): IMessage {
   return {
     id: uuidv4(),
@@ -73,5 +97,6 @@ export function createUserMessage(
     avatar: "/avatar.png",
     text: text,
     files: attachedFiles,
+    status: 'ok'
   };
 }

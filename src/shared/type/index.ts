@@ -1,13 +1,16 @@
 export interface IMessage {
   id: string;
   role: "user" | "assistant";
+  status: "ok" | "pending" | "failed";
+  text: string;
   name: string;
   time: string;
   avatar: string;
-  text: string;
   files?: IFileMeta[];
+  content?: string; 
+  createdAt?: string; 
+  attachments?: any[];
 }
-
 export interface IChat {
   id: string;
   title: string;
@@ -42,4 +45,14 @@ export interface MessageContentBlock {
     data: string;
     format: string;
   };
+}
+
+
+export interface IGetChatsResponse {
+  data: IChat[];
+  nextCursor: string | null;
+}
+
+export interface ICreateChatResponse {
+  data: IChat;
 }
