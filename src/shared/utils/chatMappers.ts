@@ -2,6 +2,7 @@ import {
   IMessage,
   IFileMeta,
   SendMessageAttachment,
+  IMessageToApi
 } from "@/shared/type/index";
 import { format } from "date-fns";
 
@@ -9,14 +10,14 @@ export function stripDataUrlPrefix(value: string) {
   return value.includes(",") ? value.split(",")[1] : value;
 }
 
-export function mapApiMessageToClient(message: any): IMessage {
+export function mapApiMessageToClient(message: IMessageToApi): IMessage {
   return {
     id: message.id,
-    role: message.role,
-    status: message.status || "ok",
+    role: message.role as "user" | "assistant", 
+    status: (message.status || "ok") as "ok" | "pending" | "failed",
     text: message.content || "",
-    time: message.createdAt ? format(new Date(), "HH:mm") : "",
-    files: (message.attachments || []).map((att: any) => ({
+    time: format(new Date(message.createdAt), "HH:mm"),
+    files: (message.attachments || []).map((att) => ({
       name: att.type === "image" ? "Image" : "Document",
       size: 0,
       type: att.mimeType,

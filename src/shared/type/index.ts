@@ -69,7 +69,7 @@ export interface IMessageToApi {
   content: string;
   status: string;
   createdAt: string;
-  attachments: string[];
+  attachments: IMessageAttachment[];
   llm?: {
     provider: string;
     model: string;

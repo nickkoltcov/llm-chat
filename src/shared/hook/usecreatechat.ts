@@ -11,13 +11,15 @@ export const useCreateChat = () => {
 
   return useMutation({
     mutationFn: async (firstMessage: string) => {
-      const chat = await chatService.createChat(null);
+      const chat = await chatService.createChat(firstMessage);
 
       await chatService.sendMessage({
         chatId: chat.data.id,
         content: firstMessage,
         clientMessageId: uuidv4(),
       });
+
+      
 
       return chat.data;
     },
