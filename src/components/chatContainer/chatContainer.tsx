@@ -7,15 +7,8 @@ import clsx from "clsx";
 import useChatSession from "@/shared/hook/useChatSession";
 
 export default function ChatContainer({ chatsid }: { chatsid: string }) {
-  const {
-    messages,
-    isLoading,
-    errorBanner,
-    retryingMessageId,
-    onSendUserMessage,
-    onRetryMessage,
-    clearError,
-  } = useChatSession(chatsid);
+  const { messages, isSending, errorBanner, onSendUserMessage, clearError } =
+    useChatSession(chatsid);
 
   return (
     <>
@@ -23,8 +16,8 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
         <MessageList
           messages={messages}
           startTime={messages[0]?.time}
-          onRetry={onRetryMessage}
-          retryingId={retryingMessageId}
+          // onRetry={null}
+          retryingId={null}
         />
       </div>
 
@@ -35,7 +28,7 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
       <div className={styles.chat__input}>
         <ChatInput
           onAddMessage={onSendUserMessage}
-          isLoading={isLoading}
+          isLoading={isSending}
           clearError={clearError}
         />
       </div>

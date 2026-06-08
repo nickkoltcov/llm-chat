@@ -5,19 +5,18 @@ import Message from "@/components/messageList/message/message";
 import styles from "@/components/messageList/messageList.module.scss";
 import { IMessage } from "@/shared/type/index";
 import { useRef, useEffect } from "react";
-import { mapApiMessageToClient } from "@/shared/utils/chatMappers";
+import { MESSAGE_AUTHOR } from "@/shared/constants/constants";
 
 interface MessageListProps {
   messages: IMessage[];
   startTime?: string;
-  onRetry?: (id: string) => void;
+  // onRetry?: (id: string) => void;
   retryingId?: string | null;
 }
 
 export default function MessageList({
   messages,
   startTime,
-  onRetry,
   retryingId,
 }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,20 +37,20 @@ export default function MessageList({
     <div className={styles.messages}>
       {startTime && <MessageDate time={startTime} />}
       {messages.map((message) => {
-        const AImessage = mapApiMessageToClient(message);
-  
+        const author = MESSAGE_AUTHOR[message.role];
+
         return (
           <Message
-            key={AImessage.id} 
-            name={AImessage.name}
-            time={AImessage.time}
-            text={AImessage.text}
-            files={AImessage.files}
-            avatar={AImessage.avatar}
-            id={AImessage.id}
-            role={AImessage.role}
-            onRetry={onRetry}
-            isMessageLoading={AImessage.id === retryingId}
+            key={message.id}
+            name={author.name}
+            time={message.time}
+            text={message.text}
+            files={message.files}
+            avatar={author.avatar}
+            id={message.id}
+            role={message.role}
+            // onRetry={onRetry}
+            isMessageLoading={message.id === retryingId}
           />
         );
       })}

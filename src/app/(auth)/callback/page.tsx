@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import {useQueryClient} from '@tanstack/react-query'
+import { useQueryClient } from "@tanstack/react-query";
 import Button from "@/shared/ui/button/button";
 import Link from "next/link";
 import { routes } from "@/shared/config/routes";
@@ -10,13 +10,13 @@ import styles from "./callbackpage.module.scss";
 
 export default function CallbackPage() {
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [error, setError] = useState("");
 
   useEffect(() => {
     const errorParam = searchParams.get("error");
-  
+
     if (errorParam) {
       setError("Ошибка авторизации. Не удалось получить доступ.");
       return;

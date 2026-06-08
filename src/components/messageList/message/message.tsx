@@ -9,7 +9,7 @@ import IconRetry from "@/shared/assets/icons/retry.svg";
 import IconCheckMark from "@/shared/assets/icons/checkmark.svg";
 import { copyText } from "@/shared/utils/messageUtils";
 import { useState } from "react";
-import { IFileMeta, MessageContentBlock } from "@/shared/type";
+import { IFileMeta } from "@/shared/type";
 import { formatBytes } from "@/shared/utils/formatBytes";
 
 interface MessageProps {
@@ -36,33 +36,6 @@ export default function Message({
   isMessageLoading,
 }: MessageProps) {
   const [isCopied, setIsCopied] = useState(false);
-
-  const formattedBlocks: MessageContentBlock[] = [];
-
-  if (text && text.trim() !== "") {
-    formattedBlocks.push({ type: "text", text });
-  }
-
-  if (files && files.length > 0) {
-    files.forEach((file) => {
-      if (file.type?.startsWith("image/")) {
-        formattedBlocks.push({
-          type: "image_url",
-          image_url: {
-            url: file.base64,
-            name: file.name,
-          },
-        });
-      } else {
-        formattedBlocks.push({
-          type: "file",
-          name: file.name,
-          size: formatBytes(file.size)
-        });
-      }
-    });
-  }
-
   const isAI = role === "assistant";
 
   const onCopyClick = async () => {
@@ -78,7 +51,7 @@ export default function Message({
     <div className={clsx(styles.message, isAI && styles.isAI)}>
       <Image
         src={avatar || (role === "user" ? "/avatar.png" : "/AI.png")}
-        alt={'ава'}
+        alt={"ава"}
         width={32}
         height={32}
         className={styles.logo}
@@ -121,7 +94,15 @@ export default function Message({
         {isMessageLoading ? (
           <div className={styles.message__loader} />
         ) : (
-          <MediaMessage blocks={formattedBlocks} />
+          <>
+            {/* 1. Выводим текст сообщения напрямую */}
+            {text && text.trim() !== "" && (
+              <div className={clsx(styles.message__text, "d-5")}>{text}</div>
+            )}
+
+            {/* 2. Передаем оригинальный массив файлов в обновленный медиа-блок */}
+            <MediaMessage files={files} />
+          </>
         )}
       </div>
     </div>

@@ -1,67 +1,27 @@
-import { IMessage, IFileMeta, MessageContentBlock } from "@/shared/type/index";
-import { v4 as uuidv4 } from "uuid";
+import {
+  IMessage,
+  IFileMeta,
+  SendMessageAttachment,
+} from "@/shared/type/index";
 import { format } from "date-fns";
-import { buildFileBlocks } from "./fileHelpers";
 
-
-
-export async function mapMessagesToApiHistory(messages: IMessage[]) {
-  return messages.map((message) => {
-    if (message.files && message.files.length > 0) {
-      const contentBlocks: MessageContentBlock[] = [];
-
-      if (message.text.trim() !== "") {
-        contentBlocks.push({ type: "text", text: message.text });
-      }
-
-      const fileBlocks = buildFileBlocks(message.files);
-      contentBlocks.push(...fileBlocks);
-
-      return {
-        role: message.role,
-        content: contentBlocks,
-      };
-    }
-
-    return {
-      role: message.role,
-      content: message.text,
-    };
-  });
+export function stripDataUrlPrefix(value: string) {
+  return value.includes(",") ? value.split(",")[1] : value;
 }
 
-
 export function mapApiMessageToClient(message: any): IMessage {
-  const isAI = message.role === "assistant";
-
   return {
     id: message.id,
     role: message.role,
     status: message.status || "ok",
     text: message.content || "",
-    name: isAI ? "AI Assistant" : "Mauro Sicard",
-    time: message.createdAt 
-      ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) 
-      : "", 
-    
-    avatar: message.avatar || (isAI ? "/AI.png" : "/avatar.png"),
+    time: message.createdAt ? format(new Date(), "HH:mm") : "",
     files: (message.attachments || []).map((att: any) => ({
       name: att.type === "image" ? "Image" : "Document",
       size: 0,
       type: att.mimeType,
       base64: `data:${att.mimeType};base64,${att.data}`,
     })),
-  };
-}
-
-export function mapApiReplyToAssistantMessage(gptReply: any): IMessage {
-  return {
-    id: uuidv4(),
-    role: "assistant",
-    name: "LanguageGUI",
-    time: format(new Date(), "HH:mm"),
-    avatar: "/AI.png",
-    text: gptReply.reply || gptReply,
   };
 }
 
@@ -85,18 +45,15 @@ export async function convertFileToMeta(file: File): Promise<IFileMeta> {
   });
 }
 
-export function createUserMessage(
-  text: string,
-   attachedFiles: IFileMeta[],
-): IMessage {
-  return {
-    id: uuidv4(),
-    role: "user",
-    name: "Mauro Sicard",
-    time: format(new Date(), "HH:mm"),
-    avatar: "/avatar.png",
-    text: text,
-    files: attachedFiles,
-    status: 'ok'
-  };
+export function mapFilesToAttachments(
+  files: IFileMeta[] = [],
+): SendMessageAttachment[] {
+  return files.map(
+    (file) =>
+      ({
+        type: file.type.startsWith("image/") ? "image" : "file",
+        mimeType: file.type,
+        data: stripDataUrlPrefix(file.base64),
+      }) as SendMessageAttachment,
+  );
 }

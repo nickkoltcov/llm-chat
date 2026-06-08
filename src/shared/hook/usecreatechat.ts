@@ -1,26 +1,35 @@
 import { useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { chatService } from "@/shared/services/chatService";
+import { v4 as uuidv4 } from "uuid";
+import { chatQueryKeys } from "../config/queryKey";
+import { routes } from "../config/routes";
 
 export const useCreateChat = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { mutate: startChat, isPending } = useMutation({
-    mutationFn: async (title: string | null) => {
+  return useMutation({
+    mutationFn: async (firstMessage: string) => {
+      const chat = await chatService.createChat(null);
 
-      const createChat = await chatService.createChat(title);
-      
-      return { response: createChat, title };
+      await chatService.sendMessage({
+        chatId: chat.data.id,
+        content: firstMessage,
+        clientMessageId: uuidv4(),
+      });
+
+      return chat.data;
     },
-    onSuccess: ({ response, title }) => {
-      queryClient.invalidateQueries({ queryKey: ['chats'] });
-      const messageParam = title ? `?message=${encodeURIComponent(title)}` : '';
-      router.push(`/chats/${response.data.id}${messageParam}`);
+    onSuccess: (chat) => {
+      queryClient.invalidateQueries({ queryKey: chatQueryKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: chatQueryKeys.messages(chat.id),
+      });
+      router.push(routes.chat({ chatId: chat.id }));
     },
     onError: (error) => {
       console.error("Ошибка при инициализации чата:", error);
     },
   });
-  return { startChat, isPending };
 };

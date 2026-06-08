@@ -1,9 +1,13 @@
 "use client";
 
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
-import { usePathname } from 'next/navigation'
-import {getMe} from '@/shared/api/authService'
+import { usePathname } from "next/navigation";
+import { getMe } from "@/shared/api/authService";
 
 export default function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -14,8 +18,6 @@ export default function Providers({ children }: { children: ReactNode }) {
     </QueryClientProvider>
   );
 }
-
-
 
 function AuthGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

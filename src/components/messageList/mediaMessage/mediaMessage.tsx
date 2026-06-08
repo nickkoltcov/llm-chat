@@ -1,10 +1,10 @@
 import styles from "./mediaMessage.module.scss";
 import clsx from "clsx";
 import IconFile from "@/shared/assets/icons/File.svg";
-import { MessageContentBlock } from '@/shared/type/index'
+import { IMessageContentBlock, IFileMeta } from "@/shared/type/index";
 
 interface MediaMessageProps {
-  blocks: MessageContentBlock[];
+  files?: IFileMeta[];
 }
 
 const FILE_CONFIG: Record<string, { label: string }> = {
@@ -13,63 +13,48 @@ const FILE_CONFIG: Record<string, { label: string }> = {
   input_audio: { label: "Audio" },
 };
 
-export default function MediaMessage({ blocks }: MediaMessageProps) {
-  if (!blocks || !Array.isArray(blocks)) return null;
+export default function MediaMessage({ files }: MediaMessageProps) {
+  if (!files || !Array.isArray(files) || files.length === 0) return null;
 
   return (
     <div className={styles["media-message"]}>
-      {blocks.map((block, index) => {
-        if (block.type === "text") {
-          return (
-            <div
-              key={index}
-              className={clsx(styles["media-message__text"], "d-5")}
-            >
-              {block.text}
-            </div>
-          );
-        }
+      {files.map((file, index) => {
+        // Проверяем, является ли файл изображением
+        const isImage = file.type.startsWith("image/");
 
-        if (block.type === "image_url") {
+        if (isImage) {
           return (
             <div key={index} className={styles["media-message__image-wrap"]}>
               <img
-                src={block.image_url?.url}
-                alt="Вложение"
+                src={file.base64} // Берем данные напрямую из base64 строки
+                alt={file.name || "Вложение"}
                 className={styles["media-message__image"]}
+                loading="lazy"
               />
             </div>
           );
         }
 
-        if (FILE_CONFIG[block.type]) {
-
-          
-          const originalFileName =
-            block.name ||
-            block.file?.filename ||
-            FILE_CONFIG[block.type].label;
-
-          return (
-            <div key={index} className={styles["media-message__file-block"]}>
-              <div className={styles["media-message__file-info"]}>
-                <span className={styles["media-message__file-icon"]}>
-                  <IconFile />
-                </span>
-                <span
-                  className={clsx(styles["media-message__file-label"], "d-3")}
-                >
-                  {originalFileName}
-                </span>
-              </div>
-              <span className={clsx(styles["media-message__file-size"], "d-2")}>
-                {block.size}
+        // Если это документ (например, application/pdf)
+        return (
+          <div key={index} className={styles["media-message__file-block"]}>
+            <div className={styles["media-message__file-info"]}>
+              <span className={styles["media-message__file-icon"]}>
+                <IconFile />
+              </span>
+              <span
+                className={clsx(styles["media-message__file-label"], "d-3")}
+              >
+                {file.name || "Document"}
               </span>
             </div>
-          );
-        }
-
-        return null;
+            {file.size > 0 && (
+              <span className={clsx(styles["media-message__file-size"], "d-2")}>
+                {(file.size / 1024).toFixed(1)} KB
+              </span>
+            )}
+          </div>
+        );
       })}
     </div>
   );

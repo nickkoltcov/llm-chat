@@ -9,7 +9,7 @@ import { useCreateChat } from "@/shared/hook/usecreatechat";
 
 export default function FormMainPage() {
   const [text, setText] = useState("");
-  const { startChat, isPending } = useCreateChat();
+  const { mutate: startChat, isPending } = useCreateChat();
 
   const isDisabled = !text.trim() || isPending;
 

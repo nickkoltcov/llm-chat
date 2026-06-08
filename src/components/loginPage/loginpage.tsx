@@ -3,10 +3,9 @@
 import Button from "@/shared/ui/button/button";
 import styles from "./loginpage.module.scss";
 
-
 export default function LoginPage() {
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     window.location.href = "http://localhost:3000/auth/start";
   };
 

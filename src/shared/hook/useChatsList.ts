@@ -1,12 +1,27 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { chatService } from "@/shared/services/chatService"; 
-import { IChat, IGetChatsResponse } from "@/shared/type/index";
+import { chatService } from "@/shared/services/chatService";
+import { chatQueryKeys } from "../config/queryKey";
+
+const CHATS_PAGE_SIZE = 10;
 
 export default function useChatsList() {
-    return useInfiniteQuery({
-        queryKey: ['chats'],
-        queryFn: ({pageParam}) => chatService.getChats({limit: 10, cursor: pageParam}),
-        initialPageParam: null,
-        getNextPageParam: (lastPage:IGetChatsResponse) => lastPage.nextCursor
-    })
+  const query = useInfiniteQuery({
+    queryKey: chatQueryKeys.lists(),
+    queryFn: ({ pageParam }) =>
+      chatService.getChats({ limit: CHATS_PAGE_SIZE, cursor: pageParam }),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
+  });
+
+  const chats = query.data?.pages.flatMap((page) => page.data) ?? [];
+
+  return {
+    chats,
+    fetchNextPage: query.fetchNextPage,
+    hasNextPage: query.hasNextPage,
+    isFetchingNextPage: query.isFetchingNextPage,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+  };
 }

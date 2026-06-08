@@ -10,9 +10,10 @@ import IconOpenSidebar from "@/shared/assets/icons/sidebar-left.svg";
 import Plus from "@/shared/assets/icons/plus.svg";
 import { useRouter } from "next/navigation";
 import { routes } from "@/shared/config/routes";
-import IconExit from '@/shared/assets/icons/Exit.svg'
+import IconExit from "@/shared/assets/icons/Exit.svg";
 import { logout } from "@/shared/api/authService";
 import { useQueryClient } from "@tanstack/react-query";
+import { MESSAGE_AUTHOR } from "@/shared/constants/constants";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -28,18 +29,18 @@ export default function Sidebar({
   onClose,
 }: SidebarProps) {
   const router = useRouter();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const handleNewChat = () => {
     if (isMobile) onClose();
     router.push(routes.home());
   };
 
-  const handleLogout = async() => {
-    await logout()
-    queryClient.clear()
-    router.push(routes.login())
-  }
+  const handleLogout = async () => {
+    await logout();
+    queryClient.clear();
+    router.push(routes.login());
+  };
 
   return (
     <>
@@ -57,16 +58,20 @@ export default function Sidebar({
         <header className={styles.sidebar__header}>
           <div className={styles.sidebar__profile}>
             <Image
-              src="/avatar.png"
+              src={MESSAGE_AUTHOR.user.avatar}
               alt="Аватар"
               width={32}
               height={32}
               className={styles.sidebar__logo}
             />
             <span className={clsx(styles.sidebar__name, "d-1")}>
-              Mauro Sicard
+              {MESSAGE_AUTHOR.user.name}
             </span>
-            <button type='button' className={styles.sidebar__action_btn} onClick={handleLogout}>
+            <button
+              type="button"
+              className={styles.sidebar__action_btn}
+              onClick={handleLogout}
+            >
               <IconExit alt="Выход" width={16} height={16}></IconExit>
             </button>
           </div>
