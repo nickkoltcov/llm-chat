@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { chatService } from "@/shared/services/chatService";
+import { chatService } from "@/shared/api/chatService";
 import { chatQueryKeys } from "../config/queryKey";
 
 const CHATS_PAGE_SIZE = 10;

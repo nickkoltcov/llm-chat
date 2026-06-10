@@ -1,27 +1,8 @@
 import axios from "axios";
-
-const BASE_URL = "http://localhost:3000";
-
-export const apiFetch = async (endpoint: string, options: RequestInit = {}) => {
-  const finalOptions: RequestInit = {
-    ...options,
-    credentials: "include",
-    headers: { "Content-Type": "application/json", ...options.headers },
-  };
-
-  const response = await fetch(`${BASE_URL}/${endpoint}`, finalOptions);
-
-  if (response.status === 401) {
-    if (typeof window !== "undefined") {
-      window.location.href = "/login";
-    }
-  }
-
-  return response;
-};
+import { routes } from "@/shared/config/routes";
 
 export const apiClient = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });
@@ -32,7 +13,7 @@ apiClient.interceptors.response.use(
   },
   function (error) {
     if (typeof window !== "undefined" && error.response?.status === 401) {
-      window.location.href = "/login";
+      window.location.href = routes.login();
     }
 
     return Promise.reject(error);

@@ -10,13 +10,14 @@ import { MESSAGE_AUTHOR } from "@/shared/constants/constants";
 interface MessageListProps {
   messages: IMessage[];
   startTime?: string;
-  // onRetry?: (id: string) => void;
+  onRetry?: (id: string) => void;
   retryingId?: string | null;
 }
 
 export default function MessageList({
   messages,
   startTime,
+  onRetry,
   retryingId,
 }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -49,7 +50,7 @@ export default function MessageList({
             avatar={author.avatar}
             id={message.id}
             role={message.role}
-            // onRetry={onRetry}
+            onRetry={onRetry}
             isMessageLoading={message.id === retryingId}
           />
         );

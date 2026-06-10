@@ -105,3 +105,11 @@ export type SendMessageAttachment =
       mimeType: "application/pdf";
       data: string;
     };
+
+export interface IUser {
+  id: string;
+}
+
+export interface IGetMeResponse {
+  data: IUser;
+}

@@ -1,19 +1,23 @@
-import { apiFetch } from "./api-client";
+import { apiClient } from "./api-client";
+import { IGetMeResponse } from "@/shared/type/index";
 
 export const getMe = async () => {
-  const response = await apiFetch("/auth/me");
+  try {
+    const response = await apiClient.get<IGetMeResponse>("/auth/me");
 
-  if (!response.ok || response.status === 204) {
+    if (response.status === 204) {
+      return { authenticated: false, user: null };
+    }
+
+    const data = response.data;
+    return data || { authenticated: true };
+  } catch (error) {
     return { authenticated: false, user: null };
   }
-
-  const data = await response.json();
-
-  return data || { authenticated: true };
 };
 
 export const logout = async () => {
-  const response = await apiFetch("auth/logout", { method: "POST" });
+  const response = await apiClient.post("/auth/logout");
 
   return response;
 };

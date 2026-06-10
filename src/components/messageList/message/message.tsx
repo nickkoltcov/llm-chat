@@ -10,7 +10,6 @@ import IconCheckMark from "@/shared/assets/icons/checkmark.svg";
 import { copyText } from "@/shared/utils/messageUtils";
 import { useState } from "react";
 import { IFileMeta } from "@/shared/type";
-import { formatBytes } from "@/shared/utils/formatBytes";
 
 interface MessageProps {
   id: string;
@@ -95,12 +94,9 @@ export default function Message({
           <div className={styles.message__loader} />
         ) : (
           <>
-            {/* 1. Выводим текст сообщения напрямую */}
             {text && text.trim() !== "" && (
               <div className={clsx(styles.message__text, "d-5")}>{text}</div>
             )}
-
-            {/* 2. Передаем оригинальный массив файлов в обновленный медиа-блок */}
             <MediaMessage files={files} />
           </>
         )}

@@ -67,6 +67,9 @@ export default function Sidebar({
             <span className={clsx(styles.sidebar__name, "d-1")}>
               {MESSAGE_AUTHOR.user.name}
             </span>
+          </div>
+
+          <div className={styles.sidebar__actions}>
             <button
               type="button"
               className={styles.sidebar__action_btn}
@@ -74,9 +77,6 @@ export default function Sidebar({
             >
               <IconExit alt="Выход" width={16} height={16}></IconExit>
             </button>
-          </div>
-
-          <div className={styles.sidebar__actions}>
             <button className={styles.sidebar__action_btn} type="button">
               <IconSetting alt="Настройки" width={16} height={16}></IconSetting>
             </button>

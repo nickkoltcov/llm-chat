@@ -7,8 +7,15 @@ import clsx from "clsx";
 import useChatSession from "@/shared/hook/useChatSession";
 
 export default function ChatContainer({ chatsid }: { chatsid: string }) {
-  const { messages, isSending, errorBanner, onSendUserMessage, clearError } =
-    useChatSession(chatsid);
+  const {
+    messages,
+    isSending,
+    retryingMessageId,
+    errorBanner,
+    onSendUserMessage,
+    onRetryMessage,
+    clearError,
+  } = useChatSession(chatsid);
 
   return (
     <>
@@ -16,8 +23,8 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
         <MessageList
           messages={messages}
           startTime={messages[0]?.time}
-          // onRetry={null}
-          retryingId={null}
+          onRetry={onRetryMessage}
+          retryingId={retryingMessageId}
         />
       </div>
 

@@ -6,7 +6,7 @@ import {
   ISendMessageResponse,
   SendMessageAttachment,
 } from "@/shared/type/index";
-import { apiClient } from "../api/api-client";
+import { apiClient } from "./api-client";
 
 export const chatService = {
   async getChats({ limit, cursor }: { limit: number; cursor: string | null }) {

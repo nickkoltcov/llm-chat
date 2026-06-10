@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { useParams } from "next/navigation";
 import { routes } from "@/shared/config/routes";
 import useChatsList from "@/shared/hook/useChatsList";
+import Button from "@/shared/ui/button/button";
 
 export default function ChatHistory() {
   const params = useParams();
@@ -33,13 +34,13 @@ export default function ChatHistory() {
           <p className={styles.chat_history__empty}>No chats</p>
         )}
         {hasNextPage && (
-          <button
+          <Button
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className={styles.chat_history__load_more}
           >
             {isFetchingNextPage ? "Loading..." : "Load more"}
-          </button>
+          </Button>
         )}
       </nav>
     </div>

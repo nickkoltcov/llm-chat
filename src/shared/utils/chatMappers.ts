@@ -2,7 +2,7 @@ import {
   IMessage,
   IFileMeta,
   SendMessageAttachment,
-  IMessageToApi
+  IMessageToApi,
 } from "@/shared/type/index";
 import { format } from "date-fns";
 
@@ -13,7 +13,7 @@ export function stripDataUrlPrefix(value: string) {
 export function mapApiMessageToClient(message: IMessageToApi): IMessage {
   return {
     id: message.id,
-    role: message.role as "user" | "assistant", 
+    role: message.role as "user" | "assistant",
     status: (message.status || "ok") as "ok" | "pending" | "failed",
     text: message.content || "",
     time: format(new Date(message.createdAt), "HH:mm"),

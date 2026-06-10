@@ -64,4 +64,9 @@
     margin: 0 2.5rem;
     list-style: none;
   }
+
+  &__load_more {
+    display: block; // Делает кнопку блочной
+    margin: 0 auto; // Центрирует по горизонтали
+  }
 }

@@ -1,6 +1,6 @@
 import { useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { chatService } from "@/shared/services/chatService";
+import { chatService } from "@/shared/api/chatService";
 import { v4 as uuidv4 } from "uuid";
 import { chatQueryKeys } from "../config/queryKey";
 import { routes } from "../config/routes";
@@ -18,8 +18,6 @@ export const useCreateChat = () => {
         content: firstMessage,
         clientMessageId: uuidv4(),
       });
-
-      
 
       return chat.data;
     },

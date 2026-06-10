@@ -1,5 +1,5 @@
 import { IFileMeta } from "@/shared/type/index";
-import { chatService } from "@/shared/services/chatService";
+import { chatService } from "@/shared/api/chatService";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { chatQueryKeys } from "../config/queryKey";
 import {
@@ -41,46 +41,52 @@ export default function useChatSession(chatsid: string) {
     },
   });
 
-  // const onRetryMessage = async (assistantMessageId: string) => {
-  //   if (isLoading) return;
+  const retryMessageMutation = useMutation({
+    mutationFn: async (assistantMessageId: string) => {
+      const assistantIndex = messages.findIndex(
+        (m) => m.id === assistantMessageId,
+      );
+      if (assistantIndex === -1)
+        throw new Error("Сообщение ассистента не найдено");
 
-  //   const assistantMessage = messages.findIndex(
-  //     (m) => m.id === assistantMessageId,
-  //   );
-  //   const userMessage = assistantMessage - 1;
+      const userMessage = messages[assistantIndex - 1];
+      if (!userMessage || userMessage.role !== "user") {
+        throw new Error("Сообщение пользователя не найдено");
+      }
 
-  //   if (userMessage < 0 || messages[userMessage].role !== "user") return;
-
-  //   const truncatedMessages = messages.slice(0, userMessage + 1);
-
-  //   setRetryingMessageId(assistantMessageId);
-  //   setErrorBanner(null);
-  //   setIsLoading(true);
-
-  //   try {
-  //     const aiMessage = await chatService.getAssistantReply(truncatedMessages);
-
-  //     const updatedMessages = [...truncatedMessages, aiMessage]
-
-  //     setMessages(updatedMessages);
-  //   } catch (error: any) {
-  //     console.error("Ошибка при повторной отправке сообщения:", error);
-  //     setErrorBanner(
-  //       error?.message || "Selected model does not support this file type.",
-  //     );
-  //   } finally {
-  //     setIsLoading(false);
-  //     setRetryingMessageId(null);
-  //   }
-  // };
+      return chatService.sendMessage({
+        chatId: chatsid,
+        content: userMessage.text,
+        clientMessageId: uuidv4(),
+        attachments: mapFilesToAttachments(userMessage.files),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: chatQueryKeys.messages(chatsid),
+      });
+      queryClient.invalidateQueries({ queryKey: chatQueryKeys.lists() });
+    },
+  });
 
   return {
     messages,
-    // isLoading: isHistoryLoading, потом добавлю, что история грузится на странице
+    isLoading: isHistoryLoading,
     isSending: sendMessageMutation.isPending,
-    errorBanner: sendMessageMutation.error?.message || null,
+    retryingMessageId: retryMessageMutation.isPending
+      ? retryMessageMutation.variables
+      : null,
+    errorBanner:
+      sendMessageMutation.error?.message ||
+      retryMessageMutation.error?.message ||
+      null,
     onSendUserMessage: (content: string, files?: IFileMeta[]) =>
       sendMessageMutation.mutate({ content, files }),
-    clearError: () => sendMessageMutation.reset(),
+    onRetryMessage: (assistantMessageId: string) =>
+      retryMessageMutation.mutate(assistantMessageId),
+    clearError: () => {
+      sendMessageMutation.reset();
+      retryMessageMutation.reset();
+    },
   };
 }
