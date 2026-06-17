@@ -5,6 +5,7 @@ import Message from "@/components/messageList/message/message";
 import styles from "@/components/messageList/messageList.module.scss";
 import { IMessage } from "@/shared/type/index";
 import { useRef, useEffect } from "react";
+import { MESSAGE_AUTHOR } from "@/shared/constants/constants";
 
 interface MessageListProps {
   messages: IMessage[];
@@ -36,20 +37,24 @@ export default function MessageList({
   return (
     <div className={styles.messages}>
       {startTime && <MessageDate time={startTime} />}
-      {messages.map((message) => (
-        <Message
-          key={message.id}
-          name={message.name}
-          time={message.time}
-          text={message.text}
-          files={message.files}
-          avatar={message.avatar}
-          id={message.id}
-          role={message.role}
-          onRetry={onRetry}
-          isMessageLoading={message.id === retryingId}
-        />
-      ))}
+      {messages.map((message) => {
+        const author = MESSAGE_AUTHOR[message.role];
+
+        return (
+          <Message
+            key={message.id}
+            name={author.name}
+            time={message.time}
+            text={message.text}
+            files={message.files}
+            avatar={author.avatar}
+            id={message.id}
+            role={message.role}
+            onRetry={onRetry}
+            isMessageLoading={message.id === retryingId}
+          />
+        );
+      })}
 
       <div ref={messagesEndRef} style={{ height: "1px" }} />
     </div>

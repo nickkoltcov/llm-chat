@@ -1,28 +1,8 @@
 import { formatBytes } from "@/shared/utils/formatBytes";
-import { IFileMeta, MessageContentBlock } from "../type";
+import { IFileMeta, IMessageContentBlock } from "../type";
 
-export async function convertFileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        resolve(reader.result);
-      } else {
-        reject(new Error("Не удалось прочитать файл"));
-      }
-    };
-
-    reader.onerror = () => {
-      reject(reader.error || new Error("Ошибка при чтении файла"));
-    };
-
-    reader.readAsDataURL(file);
-  });
-}
-
-export  function buildFileBlocks(files: IFileMeta[]): MessageContentBlock[] {
-  const blocks: MessageContentBlock[] = [];
+export function buildFileBlocks(files: IFileMeta[]): IMessageContentBlock[] {
+  const blocks: IMessageContentBlock[] = [];
 
   for (const item of files) {
     const fileSize = formatBytes(item.size);

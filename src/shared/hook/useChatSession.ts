@@ -1,103 +1,92 @@
-import { useState, useEffect } from "react";
-import { IMessage } from "@/shared/type/index";
-import { chatStorageService } from "@/shared/storage/chatStorage";
-import { useRouter } from "next/navigation";
-import { routes } from "@/shared/config/routes";
-import { chatService } from "@/shared/services/chatService";
+import { IFileMeta } from "@/shared/type/index";
+import { chatService } from "@/shared/api/chatService";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { chatQueryKeys } from "../config/queryKey";
+import {
+  mapApiMessageToClient,
+  mapFilesToAttachments,
+} from "../utils/chatMappers";
+import { v4 as uuidv4 } from "uuid";
 
 export default function useChatSession(chatsid: string) {
-  const [messages, setMessages] = useState<IMessage[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorBanner, setErrorBanner] = useState<string | null>(null);
-  const [retryingMessageId, setRetryingMessageId] = useState<string | null>(
-    null,
-  );
+  const queryClient = useQueryClient();
 
-  const router = useRouter();
+  const { data: messages = [], isLoading: isHistoryLoading } = useQuery({
+    queryKey: chatQueryKeys.messages(chatsid),
+    queryFn: () => chatService.getChatMessages(chatsid),
+    select: (response) => response.data.map(mapApiMessageToClient),
+    retry: false,
+  });
 
-  useEffect(() => {
-    const currentChat = chatStorageService.getById(chatsid);
-    if (!currentChat) {
-      router.replace(routes.home());
-    } else {
-      setMessages(currentChat.messages || []);
-      setErrorBanner(null);
-    }
-  }, [chatsid, router]);
+  const sendMessageMutation = useMutation({
+    mutationFn: async ({
+      content,
+      files,
+    }: {
+      content: string;
+      files?: IFileMeta[];
+    }) => {
+      return chatService.sendMessage({
+        chatId: chatsid,
+        content,
+        clientMessageId: uuidv4(),
+        attachments: mapFilesToAttachments(files),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: chatQueryKeys.messages(chatsid),
+      });
+      queryClient.invalidateQueries({ queryKey: chatQueryKeys.lists() });
+    },
+  });
 
-  const onSendUserMessage = async (userMessage: IMessage) => {
-    if (isLoading) return;
-
-    setErrorBanner(null);
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
-    setIsLoading(true);
-
-    try {
-      const aiMessage = await chatService.getAssistantReply(newMessages);
-
-      const finalMessages = [...newMessages, aiMessage];
-      setMessages(finalMessages);
-      chatStorageService.updateChat(chatsid, (chat) => ({
-        ...chat,
-        messages: finalMessages,
-        updatedAt: new Date().toISOString(),
-      }));
-    } catch (error: any) {
-      console.error("Ошибка при отправке сообщения:", error);
-      setErrorBanner(
-        error?.message || "Selected model does not support this file type.",
+  const retryMessageMutation = useMutation({
+    mutationFn: async (assistantMessageId: string) => {
+      const assistantIndex = messages.findIndex(
+        (m) => m.id === assistantMessageId,
       );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      if (assistantIndex === -1)
+        throw new Error("Сообщение ассистента не найдено");
 
-  const onRetryMessage = async (assistantMessageId: string) => {
-    if (isLoading) return;
+      const userMessage = messages[assistantIndex - 1];
+      if (!userMessage || userMessage.role !== "user") {
+        throw new Error("Сообщение пользователя не найдено");
+      }
 
-    const assistantMessage = messages.findIndex(
-      (m) => m.id === assistantMessageId,
-    );
-    const userMessage = assistantMessage - 1;
-
-    if (userMessage < 0 || messages[userMessage].role !== "user") return;
-
-    const truncatedMessages = messages.slice(0, userMessage + 1);
-
-    setRetryingMessageId(assistantMessageId);
-    setErrorBanner(null);
-    setIsLoading(true);
-
-    try {
-      const aiMessage = await chatService.getAssistantReply(truncatedMessages);
-
-      const updatedMessages = [...truncatedMessages, aiMessage]
-
-      setMessages(updatedMessages);
-      chatStorageService.updateChat(chatsid, (chat) => ({
-        ...chat,
-        messages: updatedMessages,
-        updatedAt: new Date().toISOString(),
-      }));
-    } catch (error: any) {
-      console.error("Ошибка при повторной отправке сообщения:", error);
-      setErrorBanner(
-        error?.message || "Selected model does not support this file type.",
-      );
-    } finally {
-      setIsLoading(false);
-      setRetryingMessageId(null);
-    }
-  };
+      return chatService.sendMessage({
+        chatId: chatsid,
+        content: userMessage.text,
+        clientMessageId: uuidv4(),
+        attachments: mapFilesToAttachments(userMessage.files),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: chatQueryKeys.messages(chatsid),
+      });
+      queryClient.invalidateQueries({ queryKey: chatQueryKeys.lists() });
+    },
+  });
 
   return {
     messages,
-    isLoading,
-    errorBanner,
-    retryingMessageId,
-    onSendUserMessage,
-    onRetryMessage,
-    clearError: () => setErrorBanner(null),
+    isLoading: isHistoryLoading,
+    isSending: sendMessageMutation.isPending,
+    retryingMessageId: retryMessageMutation.isPending
+      ? retryMessageMutation.variables
+      : null,
+    errorBanner:
+      sendMessageMutation.error?.message ||
+      retryMessageMutation.error?.message ||
+      null,
+    onSendUserMessage: (content: string, files?: IFileMeta[]) =>
+      sendMessageMutation.mutate({ content, files }),
+    onRetryMessage: (assistantMessageId: string) =>
+      retryMessageMutation.mutate(assistantMessageId),
+    clearError: () => {
+      sendMessageMutation.reset();
+      retryMessageMutation.reset();
+    },
   };
 }

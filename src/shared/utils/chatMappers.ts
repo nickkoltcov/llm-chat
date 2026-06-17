@@ -1,43 +1,28 @@
-import { IMessage, IFileMeta, MessageContentBlock } from "@/shared/type/index";
-import { v4 as uuidv4 } from "uuid";
+import {
+  IMessage,
+  IFileMeta,
+  SendMessageAttachment,
+  IMessageToApi,
+} from "@/shared/type/index";
 import { format } from "date-fns";
-import { buildFileBlocks } from "./fileHelpers";
 
-
-
-export async function mapMessagesToApiHistory(messages: IMessage[]) {
-  return messages.map((message) => {
-    if (message.files && message.files.length > 0) {
-      const contentBlocks: MessageContentBlock[] = [];
-
-      if (message.text.trim() !== "") {
-        contentBlocks.push({ type: "text", text: message.text });
-      }
-
-      const fileBlocks = buildFileBlocks(message.files);
-      contentBlocks.push(...fileBlocks);
-
-      return {
-        role: message.role,
-        content: contentBlocks,
-      };
-    }
-
-    return {
-      role: message.role,
-      content: message.text,
-    };
-  });
+export function stripDataUrlPrefix(value: string) {
+  return value.includes(",") ? value.split(",")[1] : value;
 }
 
-export function mapApiReplyToAssistantMessage(gptReply: any): IMessage {
+export function mapApiMessageToClient(message: IMessageToApi): IMessage {
   return {
-    id: uuidv4(),
-    role: "assistant",
-    name: "LanguageGUI",
-    time: format(new Date(), "HH:mm"),
-    avatar: "/AI.png",
-    text: gptReply.reply || gptReply,
+    id: message.id,
+    role: message.role as "user" | "assistant",
+    status: (message.status || "ok") as "ok" | "pending" | "failed",
+    text: message.content || "",
+    time: format(new Date(message.createdAt), "HH:mm"),
+    files: (message.attachments || []).map((att) => ({
+      name: att.type === "image" ? "Image" : "Document",
+      size: 0,
+      type: att.mimeType,
+      base64: `data:${att.mimeType};base64,${att.data}`,
+    })),
   };
 }
 
@@ -61,17 +46,15 @@ export async function convertFileToMeta(file: File): Promise<IFileMeta> {
   });
 }
 
-export function createUserMessage(
-  text: string,
-  attachedFiles: IFileMeta[],
-): IMessage {
-  return {
-    id: uuidv4(),
-    role: "user",
-    name: "Mauro Sicard",
-    time: format(new Date(), "HH:mm"),
-    avatar: "/avatar.png",
-    text: text,
-    files: attachedFiles,
-  };
+export function mapFilesToAttachments(
+  files: IFileMeta[] = [],
+): SendMessageAttachment[] {
+  return files.map(
+    (file) =>
+      ({
+        type: file.type.startsWith("image/") ? "image" : "file",
+        mimeType: file.type,
+        data: stripDataUrlPrefix(file.base64),
+      }) as SendMessageAttachment,
+  );
 }

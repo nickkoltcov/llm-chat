@@ -5,14 +5,14 @@ import PaperPlane from "@/shared/assets/icons/paper-plane.svg";
 import Button from "@/shared/ui/button/button";
 import clsx from "clsx";
 import { useState } from "react";
-import { IMessage } from "@/shared/type/index";
+import { IFileMeta } from "@/shared/type/index";
 import IconClip from "@/shared/assets/icons/clip.svg";
 import AttachmentMenu from "@/components/messageList/attachmentMenu/attachmentMenu";
 import AttachmentsList from "@/components/messageList/attachmentsList/attachmentsList";
-import { createUserMessage, convertFileToMeta } from "@/shared/utils/chatMappers";
+import { convertFileToMeta } from "@/shared/utils/chatMappers";
 
 interface ChatInputProps {
-  onAddMessage: (message: IMessage) => void;
+  onAddMessage: (content: string, files?: IFileMeta[]) => void;
   isLoading: boolean;
   clearError: () => void;
 }
@@ -32,12 +32,10 @@ export default function ChatInput({
 
     try {
       const fileMetas = await Promise.all(
-        attachedFiles.map((file) => convertFileToMeta(file))
+        attachedFiles.map((file) => convertFileToMeta(file)),
       );
 
-      const userMessage = createUserMessage(message, fileMetas);
-      
-      onAddMessage(userMessage);
+      onAddMessage(message, fileMetas);
       setMessage("");
       setAttachedFiles([]);
     } catch (error) {

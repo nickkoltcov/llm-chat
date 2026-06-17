@@ -1,40 +1,35 @@
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
-import { chatStorageService } from "@/shared/storage/chatStorage";
-import { IChat } from "@/shared/type/index";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { CHAT_HISTORY_QUERY_KEY } from "@/shared/config/queryKeys";
-import { createUserMessage } from "@/shared/utils/chatMappers";
-import { chatService } from "@/shared/services/chatService";
+import { chatService } from "@/shared/api/chatService";
+import { v4 as uuidv4 } from "uuid";
+import { chatQueryKeys } from "../config/queryKey";
+import { routes } from "../config/routes";
 
 export const useCreateChat = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { mutate: startChat, isPending } = useMutation({
+  return useMutation({
     mutationFn: async (firstMessage: string) => {
-      const newChatId = uuidv4();
+      const chat = await chatService.createChat(firstMessage);
 
-      const userMessage = createUserMessage(firstMessage, []);
+      await chatService.sendMessage({
+        chatId: chat.data.id,
+        content: firstMessage,
+        clientMessageId: uuidv4(),
+      });
 
-      const aiMessage = await chatService.getAssistantReply([userMessage]);
-
-      const newChat: IChat = {
-        id: newChatId,
-        title: firstMessage.slice(0, 30),
-        messages: [userMessage, aiMessage],
-      };
-
-      return { newChat, newChatId };
+      return chat.data;
     },
-    onSuccess: ({ newChat, newChatId }) => {
-      chatStorageService.addChat(newChat);
-      queryClient.invalidateQueries({ queryKey: [CHAT_HISTORY_QUERY_KEY] });
-      router.push(`/chats/${newChatId}`);
+    onSuccess: (chat) => {
+      queryClient.invalidateQueries({ queryKey: chatQueryKeys.lists() });
+      queryClient.invalidateQueries({
+        queryKey: chatQueryKeys.messages(chat.id),
+      });
+      router.push(routes.chat({ chatId: chat.id }));
     },
     onError: (error) => {
       console.error("Ошибка при инициализации чата:", error);
     },
   });
-  return { startChat, isPending };
 };

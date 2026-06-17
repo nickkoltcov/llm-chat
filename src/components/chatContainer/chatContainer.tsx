@@ -9,9 +9,9 @@ import useChatSession from "@/shared/hook/useChatSession";
 export default function ChatContainer({ chatsid }: { chatsid: string }) {
   const {
     messages,
-    isLoading,
-    errorBanner,
+    isSending,
     retryingMessageId,
+    errorBanner,
     onSendUserMessage,
     onRetryMessage,
     clearError,
@@ -35,7 +35,7 @@ export default function ChatContainer({ chatsid }: { chatsid: string }) {
       <div className={styles.chat__input}>
         <ChatInput
           onAddMessage={onSendUserMessage}
-          isLoading={isLoading}
+          isLoading={isSending}
           clearError={clearError}
         />
       </div>
